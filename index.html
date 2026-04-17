@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外贸客户管理 CRM</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --gray: #6b7280;
+    --gray-light: #f9fafb;
+    --border: #e5e7eb;
+    --text: #111827;
+    --text-sub: #6b7280;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,.12);
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f3f4f6; color: var(--text); font-size: 14px; }
+  
+  /* Layout */
+  .app { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar { width: 220px; background: #1e293b; color: #cbd5e1; display: flex; flex-direction: column; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 16px 16px; border-bottom: 1px solid #334155; }
+  .sidebar-logo h1 { font-size: 17px; font-weight: 700; color: #fff; line-height: 1.3; }
+  .sidebar-logo p { font-size: 11px; color: #64748b; margin-top: 3px; }
+  .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px; cursor: pointer; font-size: 13.5px; transition: all .15s; margin-bottom: 2px; }
+  .nav-item:hover { background: #334155; color: #e2e8f0; }
+  .nav-item.active { background: #2563eb; color: #fff; }
+  .nav-item .icon { width: 18px; text-align: center; flex-shrink: 0; }
+  .nav-badge { margin-left: auto; background: #ef4444; color: #fff; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center; }
+  .sidebar-footer { padding: 12px 8px; border-top: 1px solid #334155; }
+  
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .topbar h2 { font-size: 17px; font-weight: 600; flex: 1; }
+  .content { flex: 1; overflow-y: auto; padding: 20px 24px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all .15s; line-height: 1; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #fff; color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--gray-light); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  .btn-icon { padding: 6px 8px; }
+
+  /* Cards */
+  .card { background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .card-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .card-header h3 { font-size: 15px; font-weight: 600; flex: 1; }
+  .card-body { padding: 18px; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 16px 18px; box-shadow: var(--shadow); }
+  .stat-label { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--text-sub); margin-top: 6px; }
+  .stat-card.blue .stat-value { color: var(--primary); }
+  .stat-card.green .stat-value { color: var(--success); }
+  .stat-card.orange .stat-value { color: var(--warning); }
+  .stat-card.red .stat-value { color: var(--danger); }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { background: var(--gray-light); padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: .03em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafafa; }
+  .customer-name { font-weight: 600; color: var(--text); }
+  .customer-company { font-size: 12px; color: var(--text-sub); }
+
+  /* Status badges */
+  .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .status-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .s-new              { background: #eff6ff; color: #1d4ed8; } .s-new::before              { background: #2563eb; }
+  .s-contacted        { background: #f0fdf4; color: #15803d; } .s-contacted::before        { background: #22c55e; }
+  .s-needs_confirmed  { background: #f0fdfa; color: #0f766e; } .s-needs_confirmed::before  { background: #14b8a6; }
+  .s-quoted           { background: #fff7ed; color: #c2410c; } .s-quoted::before           { background: #ea580c; }
+  .s-sample           { background: #faf5ff; color: #7e22ce; } .s-sample::before           { background: #a855f7; }
+  .s-ordered          { background: #dcfce7; color: #166534; } .s-ordered::before          { background: #16a34a; }
+  .s-closed           { background: #fefce8; color: #854d0e; } .s-closed::before           { background: #ca8a04; }
+  .s-lost             { background: #fef2f2; color: #b91c1c; } .s-lost::before             { background: #ef4444; }
+
+  /* Priority */
+  .priority-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 500; }
+  .p-urgent { color: #9d174d; }
+  .p-high { color: var(--danger); }
+  .p-medium { color: var(--warning); }
+  .p-low { color: var(--gray); }
+  .p-minimal { color: #3b82f6; }
+
+  /* Follow-up indicator */
+  .followup-overdue { color: var(--danger); font-weight: 600; }
+  .followup-today { color: var(--warning); font-weight: 600; }
+  .followup-soon { color: var(--primary); }
+  .followup-ok { color: var(--gray); }
+
+  /* Search & filter bar */
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+  .search-wrap input { width: 100%; padding: 8px 12px 8px 38px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; box-sizing: border-box; }
+  .search-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 14px; pointer-events: none; line-height: 1; }
+  select { padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; background: #fff; outline: none; cursor: pointer; color: var(--text); }
+  select:focus { border-color: var(--primary); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); width: 100%; max-width: 680px; max-height: 90vh; display: flex; flex-direction: column; }
+  .modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+  .modal-header h3 { font-size: 16px; font-weight: 600; flex: 1; }
+  .modal-close { background: none; border: none; cursor: pointer; color: var(--gray); font-size: 20px; padding: 0; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+  /* Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: .03em; }
+  input[type=text], input[type=email], input[type=date], input[type=tel], textarea, select.form-select {
+    padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; width: 100%; font-family: inherit; color: var(--text);
+  }
+  input:focus, textarea:focus, select.form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* Timeline / Notes */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .timeline-item { display: flex; gap: 12px; position: relative; padding-bottom: 16px; }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); flex-shrink: 0; margin-top: 5px; position: relative; z-index: 1; }
+  .timeline-item::before { content: ''; position: absolute; left: 4px; top: 15px; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item:last-child::before { display: none; }
+  .timeline-content { flex: 1; }
+  .timeline-meta { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
+  .timeline-text { font-size: 13px; line-height: 1.5; }
+
+  /* Alert */
+  .alert { padding: 10px 14px; border-radius: 6px; font-size: 13px; display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px; }
+  .alert-warning { background: var(--warning-light); border: 1px solid #fcd34d; color: #92400e; }
+  .alert-danger { background: var(--danger-light); border: 1px solid #fca5a5; color: #991b1b; }
+
+  /* Reminder cards */
+  .reminder-list { display: flex; flex-direction: column; gap: 10px; }
+  .reminder-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
+  .reminder-card.overdue { border-left: 3px solid var(--danger); }
+  .reminder-card.today { border-left: 3px solid var(--warning); }
+  .reminder-card.soon { border-left: 3px solid var(--primary); }
+  .reminder-info { flex: 1; }
+  .reminder-name { font-weight: 600; font-size: 14px; }
+  .reminder-detail { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+  .reminder-date { font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+  /* Empty state */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--text-sub); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 16px; }
+  .tab { padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text-sub); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* Tag */
+  .tag { display: inline-block; padding: 2px 7px; background: var(--gray-light); border-radius: 4px; font-size: 11px; color: var(--text-sub); margin: 1px; }
+
+  /* Country flag emoji */
+  .flag { font-size: 16px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    /* Sidebar → bottom tab bar */
+    .app { flex-direction: column; }
+    .sidebar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      width: 100%; height: 58px;
+      flex-direction: row;
+      border-top: 1px solid #334155;
+      z-index: 200;
+    }
+    .sidebar-logo, .sidebar-footer { display: none; }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: row;
+      padding: 0;
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+    .nav-item {
+      flex-direction: column;
+      gap: 3px;
+      padding: 6px 8px;
+      font-size: 10px;
+      flex: 1;
+      min-width: 56px;
+      text-align: center;
+      justify-content: center;
+      margin-bottom: 0;
+      border-radius: 0;
+    }
+    .nav-item .icon { width: auto; font-size: 16px; }
+    .nav-item span { display: inline !important; font-size: 10px; }
+    .nav-item.active { background: #2563eb; border-radius: 0; }
+
+    /* Main area — leave room for bottom bar */
+    .main { margin-bottom: 58px; }
+    .content { padding: 12px; }
+
+    /* Stats: 2 columns */
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    /* Form: single column always */
+    .form-grid { grid-template-columns: 1fr; }
+
+    /* Tables → cards */
+    .table-wrap { overflow-x: visible; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tr { margin-bottom: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; }
+    td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    td::before {
+      content: attr(data-label);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-sub);
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      flex-shrink: 0;
+      min-width: 80px;
+    }
+
+    /* Modal: full-screen on mobile */
+    .modal-overlay { padding: 0; align-items: flex-end; }
+    .modal { max-width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-height: 95vh; }
+    .modal-body { padding: 16px; }
+
+    /* Settings page cards: 1 column */
+    [id^="settings-page"] > div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+
+    /* Dashboard double-column → 1 column */
+    .content > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+
+    /* Reminder cards */
+    .reminder-card { flex-wrap: wrap; }
+    .reminder-date { margin-left: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar { padding: 0 12px; }
+    .topbar h2 { font-size: 15px; }
+    .btn-primary { padding: 6px 10px; font-size: 12px; }
+    .card-body { padding: 12px; }
+  }
+
+  /* Toast */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); animation: slideIn .2s ease; max-width: 280px; }
+  .toast-success { background: #166534; color: #fff; }
+  .toast-error { background: #991b1b; color: #fff; }
+  .toast-info { background: #1e40af; color: #fff; }
+  @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <h1>🌐 外贸CRM</h1>
+      <p>客户跟进管理系统</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <span class="icon">📊</span><span>数据概览</span>
+      </div>
+      <div class="nav-item" onclick="showPage('customers')" id="nav-customers">
+        <span class="icon">👥</span><span>客户列表</span>
+      </div>
+      <div class="nav-item" onclick="showPage('reminders')" id="nav-reminders">
+        <span class="icon">🔔</span><span>跟进提醒</span>
+        <span class="nav-badge" id="reminder-badge" style="display:none">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('data')" id="nav-data">
+        <span class="icon">📁</span><span>数据管理</span>
+      </div>
+      <div class="nav-item" onclick="showPage('settings')" id="nav-settings">
+        <span class="icon">⚙️</span><span>系统设置</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="font-size:11px;color:#475569;text-align:center;">数据存储于本地</div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h2 id="page-title">数据概览</h2>
+      <button class="btn btn-primary" onclick="openAddModal()">
+        ＋ 新增客户
+      </button>
+    </div>
+    <div class="content" id="main-content">
+      <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--gray);font-size:14px">
+        ⏳ 加载中...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Inline date picker popup for quick follow-up -->
+<div id="quick-followup-popup" style="display:none;position:fixed;z-index:9999;background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 24px rgba(0,0,0,.15);padding:12px;min-width:200px">
+  <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text)" id="quick-followup-title"></div>
+  <input type="date" id="quick-followup-picker" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box">
+  <div style="display:flex;gap:6px;margin-top:8px">
+    <button class="btn btn-secondary btn-sm" onclick="closeQuickFollowup()" style="flex:1">取消</button>
+    <button class="btn btn-primary btn-sm" onclick="applyQuickFollowup()" style="flex:1">确认</button>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Customer Modal -->
+<div class="modal-overlay" id="customer-modal" style="display:none">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modal-title">新增客户</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <div class="tab active" onclick="switchModalTab('info')" id="tab-info">基本信息</div>
+        <div class="tab" onclick="switchModalTab('notes')" id="tab-notes">沟通记录</div>
+      </div>
+      <!-- Info tab -->
+      <div id="modal-tab-info">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>联系人姓名 *</label>
+            <input type="text" id="f-name" placeholder="如：John Smith">
+          </div>
+          <div class="form-group">
+            <label>公司名称 *</label>
+            <input type="text" id="f-company" placeholder="公司全称">
+          </div>
+          <div class="form-group">
+            <label>国家/地区</label>
+            <input type="text" id="f-country" placeholder="如：USA / 美国">
+          </div>
+          <div class="form-group">
+            <label>来源渠道</label>
+            <select class="form-select" id="f-source"></select>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="f-email" placeholder="email@example.com">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp / 电话</label>
+            <input type="tel" id="f-phone" placeholder="+1 234 567 8900">
+          </div>
+          <div class="form-group">
+            <label>客户状态</label>
+            <select class="form-select" id="f-status"></select>
+          </div>
+          <div class="form-group">
+            <label>优先级</label>
+            <select class="form-select" id="f-priority"></select>
+          </div>
+          <div class="form-group">
+            <label>主要产品需求</label>
+            <input type="text" id="f-product" placeholder="如：水射流织机 YR8101">
+          </div>
+          <div class="form-group">
+            <label>预计订单金额 (USD)</label>
+            <input type="text" id="f-amount" placeholder="如：50000">
+          </div>
+          <div class="form-group">
+            <label>下次跟进日期</label>
+            <input type="date" id="f-followup">
+          </div>
+          <div class="form-group">
+            <label>首次联系日期</label>
+            <input type="date" id="f-first-contact">
+          </div>
+          <div class="form-group full">
+            <label>标签 (用逗号分隔)</label>
+            <input type="text" id="f-tags" placeholder="如：VIP客户, 织机, 大型采购商">
+          </div>
+          <div class="form-group full">
+            <label>备注</label>
+            <textarea id="f-note" placeholder="客户背景、需求特点、注意事项等..."></textarea>
+          </div>
+        </div>
+      </div>
+      <!-- Notes tab -->
+      <div id="modal-tab-notes" style="display:none">
+        <div style="margin-bottom:14px">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+            <div class="form-group" style="margin:0;flex-shrink:0">
+              <label>日期</label>
+              <input type="date" id="new-note-date">
+            </div>
+            <div class="form-group" style="margin:0;flex:1">
+              <label>沟通方式</label>
+              <select class="form-select" id="new-note-channel"></select>
+            </div>
+          </div>
+          <textarea id="new-note-text" placeholder="记录沟通内容、客户反馈、下一步行动..." style="min-height:80px;width:100%;resize:vertical;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;margin-bottom:10px"></textarea>
+          <button class="btn btn-primary" style="width:100%;padding:10px;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(37,99,235,.25)" onclick="addNote()">+ 添加记录</button>
+        </div>
+        <div id="notes-timeline" class="timeline"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">保存客户</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detail-modal" style="display:none">
+  <div class="modal" style="max-width:760px" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="detail-title">客户详情</h3>
+      <button class="modal-close" onclick="closeDetail()">×</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="deleteCurrentCustomer()">删除</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" onclick="closeDetail()">关闭</button>
+      <button class="btn btn-primary" onclick="editCurrentCustomer()">编辑</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA LAYER =====================
+// Default settings
+const DEFAULT_SETTINGS = {
+  sources: ['Facebook','Made-in-China','酒店偶遇','展会','LinkedIn','老客户介绍','主动开发','其他'],
+  statuses: [
+    { id: 'new',           label: '新询盘',   cls: 's-new',           icon: '🆕', active: true },
+    { id: 'contacted',     label: '已联系',   cls: 's-contacted',     icon: '📞', active: true },
+    { id: 'needs_confirmed', label: '需求确认', cls: 's-needs_confirmed', icon: '💬', active: true },
+    { id: 'quoted',        label: '已报价',   cls: 's-quoted',        icon: '📋', active: true },
+    { id: 'sample',        label: '样品/验厂', cls: 's-sample',       icon: '📦', active: true },
+    { id: 'ordered',       label: '已下单',   cls: 's-ordered',       icon: '✅', active: true },
+    { id: 'closed',        label: '已成交',   cls: 's-closed',        icon: '🎉', active: true },
+    { id: 'lost',          label: '流失',     cls: 's-lost',          icon: '🚫', active: true },
+  ],
+  priorities: [
+    { id: 'urgent', label: '紧急', cls: 'p-urgent', icon: '🔥', active: true },
+    { id: 'high',   label: '高',   cls: 'p-high',   icon: '🔴', active: true },
+    { id: 'medium', label: '中',   cls: 'p-medium', icon: '🟡', active: true },
+    { id: 'low',    label: '低',   cls: 'p-low',    icon: '⚪', active: true },
+    { id: 'minimal', label: '极低', cls: 'p-minimal', icon: '🔵', active: true },
+  ],
+  channels: ['WhatsApp','Facebook','Email','电话','其他'],
+  reminderDays: 7,
+  soonDays: 7,
+};
+
+let customers = [];
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+let currentEditId = null;
+let currentDetailId = null;
+let currentPage = 'dashboard';
+let filterStatus = '';
+let filterPriority = '';
+let searchQuery = '';
+
+// Dynamic maps
+let STATUS_MAP = {};
+let PRIORITY_MAP = {};
+
+function rebuildMaps() {
+  STATUS_MAP = {};
+  settings.statuses.forEach(s => { STATUS_MAP[s.id] = { label: s.label, cls: s.cls, icon: s.icon }; });
+  PRIORITY_MAP = {};
+  settings.priorities.forEach(p => { PRIORITY_MAP[p.id] = { label: p.label, cls: p.cls, icon: p.icon }; });
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// ===================== DATA PERSISTENCE =====================
+// IndexedDB only — works on file://, no server, fully automatic
+// JSON export/import via Blob + FileReader (manual only)
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('crm_db', 2);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('data')) {
+        db.createObjectStore('data', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = e => resolve(e.target.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGet(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('data', 'readonly');
+    const req = tx.objectStore('data').get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.val : null);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbPut(id, val) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('data', 'readwrite');
+    tx.onerror = () => reject(tx.error);        // 事务级错误
+    const req = tx.objectStore('data').put({ id, val });
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);       // 请求级错误
+  });
+}
+
+async function loadData() {
+  try {
+    const dbSettings  = await idbGet('settings');
+    const dbCustomers = await idbGet('customers');
+    if (dbSettings) {
+      settings = Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), dbSettings);
+      rebuildMaps();
+    }
+    if (dbCustomers) {
+      customers = dbCustomers;
+    }
+  } catch (e) { /* IndexedDB unavailable */ }
+}
+
+function saveData() {
+  Promise.all([
+    idbPut('customers', customers),
+    idbPut('settings', settings),
+  ]).catch(err => {
+    console.error('数据保存失败:', err);
+    toast('⚠️ 数据保存失败，请检查浏览器存储空间或隐私设置', 'error');
+  });
+}
+
+// --- Manual JSON export (Blob download) ---
+function saveToJson() {
+  const blob = new Blob([JSON.stringify({
+    customers,
+    settings,
+    savedAt: new Date().toISOString(),
+  }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'crm_backup.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ===================== PAGES =====================
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + page).classList.add('active');
+  const titles = { dashboard: '数据概览', customers: '客户列表', reminders: '跟进提醒', data: '数据管理', settings: '系统设置' };
+  document.getElementById('page-title').textContent = titles[page];
+  renderPage();
+}
+
+function renderPage() {
+  const c = document.getElementById('main-content');
+  if (currentPage === 'dashboard') c.innerHTML = renderDashboard();
+  else if (currentPage === 'customers') c.innerHTML = renderCustomers();
+  else if (currentPage === 'reminders') c.innerHTML = renderReminders();
+  else if (currentPage === 'data') c.innerHTML = renderData();
+  else if (currentPage === 'settings') c.innerHTML = renderSettings();
+  updateReminderBadge();
+}
+
+// ===================== DASHBOARD =====================
+function renderDashboard() {
+  const total = customers.length;
+  const active = customers.filter(c => !['lost'].includes(c.status)).length;
+  const reminders = getOverdueAndToday().length;
+  const orders = customers.filter(c => ['ordered','closed'].includes(c.status)).length;
+
+  const recentFollowups = [...customers]
+    .filter(c => c.followupDate)
+    .sort((a,b) => new Date(a.followupDate) - new Date(b.followupDate))
+    .slice(0, 5);
+
+  const recentAdded = [...customers]
+    .sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, 5);
+
+  const statusCounts = {};
+  customers.forEach(c => { statusCounts[c.status] = (statusCounts[c.status] || 0) + 1; });
+
+  return `
+  <div id="dashboard-page">
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">客户总数</div>
+      <div class="stat-value">${total}</div>
+      <div class="stat-sub">活跃客户 ${active} 个</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">待跟进提醒</div>
+      <div class="stat-value">${reminders}</div>
+      <div class="stat-sub">需要今日处理</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">已下单客户</div>
+      <div class="stat-value">${orders}</div>
+      <div class="stat-sub">转化率 ${total ? Math.round(orders/total*100) : 0}%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">需求确认客户</div>
+      <div class="stat-value" style="color:var(--warning)">${statusCounts.needs_confirmed || 0}</div>
+      <div class="stat-sub">样品阶段 ${statusCounts.sample || 0} 个</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-header"><h3>📅 即将跟进</h3><span style="font-size:12px;color:var(--text-sub)">按日期排序</span></div>
+      <div class="card-body">
+        ${recentFollowups.length ? recentFollowups.map(c => {
+          const info = getFollowupInfo(c.followupDate);
+          return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">${c.name}</div>
+              <div style="font-size:12px;color:var(--text-sub)">${c.company || ''}</div>
+            </div>
+            <div class="${info.cls}" style="font-size:12px">${info.label}</div>
+            <button class="btn btn-secondary btn-sm" onclick="openDetail('${c.id}')">查看</button>
+          </div>`;
+        }).join('') : '<div class="empty-state"><div class="empty-icon">🎉</div><p>暂无待跟进客户</p></div>'}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>🕐 最近新增</h3><span style="font-size:12px;color:var(--text-sub)">最新5位</span></div>
+      <div class="card-body">
+        ${recentAdded.length ? recentAdded.map(c => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:13px">${c.name}</div>
+              <div style="font-size:12px;color:var(--text-sub)">${c.company || ''} · ${c.country || ''}</div>
+            </div>
+            <span class="status-badge ${STATUS_MAP[c.status]?.cls || ''}">${STATUS_MAP[c.status]?.label || c.status}</span>
+          </div>`).join('') : '<div class="empty-state"><div class="empty-icon">📋</div><p>暂无客户数据</p></div>'}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h3>📊 客户状态分布</h3></div>
+    <div class="card-body" style="display:flex;flex-wrap:wrap;gap:10px">
+      ${Object.entries(STATUS_MAP).map(([k,v]) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray-light);border-radius:8px;min-width:130px">
+          <span class="status-badge ${v.cls}">${v.label}</span>
+          <span style="font-size:18px;font-weight:700;margin-left:auto">${statusCounts[k] || 0}</span>
+        </div>`).join('')}
+    </div>
+  </div>
+  </div>`;
+}
+
+// ===================== CUSTOMERS =====================
+function renderCustomers() {
+  let list = [...customers];
+  if (filterStatus) list = list.filter(c => c.status === filterStatus);
+  if (filterPriority) list = list.filter(c => c.priority === filterPriority);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(c =>
+      (c.name||'').toLowerCase().includes(q) ||
+      (c.company||'').toLowerCase().includes(q) ||
+      (c.country||'').toLowerCase().includes(q) ||
+      (c.email||'').toLowerCase().includes(q) ||
+      (c.product||'').toLowerCase().includes(q)
+    );
+  }
+  // sort by priority order from settings
+  const priOrder = {};
+  settings.priorities.forEach((p, i) => { priOrder[p.id] = i; });
+  list.sort((a,b) => {
+    const pa = priOrder[a.priority] ?? 99;
+    const pb = priOrder[b.priority] ?? 99;
+    if (pa !== pb) return pa - pb;
+    return (b.createdAt||0) - (a.createdAt||0);
+  });
+
+  return `
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="      搜索客户姓名、公司、国家..." value="${searchQuery}"
+        oninput="searchQuery=this.value;renderPage()">
+    </div>
+    <select onchange="filterStatus=this.value;renderPage()">
+      <option value="">全部状态</option>
+      ${settings.statuses.filter(s=>s.active!==false).map(s => `<option value="${s.id}" ${filterStatus===s.id?'selected':''}>${s.icon} ${s.label}</option>`).join('')}
+    </select>
+    <select onchange="filterPriority=this.value;renderPage()">
+      <option value="">全部优先级</option>
+      ${settings.priorities.filter(p=>p.active!==false).map(p => `<option value="${p.id}" ${filterPriority===p.id?'selected':''}>${p.icon} ${p.label}</option>`).join('')}
+    </select>
+    <span style="margin-left:auto;font-size:13px;color:var(--text-sub)">共 ${list.length} 位客户</span>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>客户 / 公司</th>
+            <th>国家</th>
+            <th>来源</th>
+            <th>状态</th>
+            <th>优先级</th>
+            <th>产品需求</th>
+            <th>下次跟进</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.length ? list.map(c => {
+            const info = getFollowupInfo(c.followupDate);
+            const pm = PRIORITY_MAP[c.priority] || PRIORITY_MAP.medium;
+            return `<tr>
+              <td data-label="客户">
+                <div class="customer-name" style="cursor:pointer;color:var(--primary)" onclick="openDetail('${c.id}')">${c.name}</div>
+                <div class="customer-company">${c.company || '—'}</div>
+              </td>
+              <td data-label="国家">${c.country || '—'}</td>
+              <td data-label="来源"><span class="tag">${c.source || '—'}</span></td>
+              <td data-label="状态"><span class="status-badge ${STATUS_MAP[c.status]?.cls||''}">${STATUS_MAP[c.status]?.label||c.status}</span></td>
+              <td data-label="优先级"><span class="priority-badge ${pm.cls}">${pm.icon} ${pm.label}</span></td>
+              <td data-label="产品需求" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.product || '—'}</td>
+              <td data-label="下次跟进">
+                ${c.followupDate
+                  ? `<span class="${info.cls}">${info.label}</span>`
+                  : '<span style="color:var(--gray)">未设置</span>'}
+              </td>
+              <td data-label="操作">
+                <div style="display:flex;gap:4px">
+                  <button class="btn btn-secondary btn-sm btn-icon" title="查看详情" onclick="openDetail('${c.id}')">👁</button>
+                  <button class="btn btn-secondary btn-sm btn-icon" title="编辑" onclick="openEditModal('${c.id}')">✏️</button>
+                  <button class="btn btn-secondary btn-sm btn-icon" title="设置跟进日期" onclick="triggerQuickFollowup('${c.id}', event)">📅</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('') : `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🔍</div><p>没有符合条件的客户</p></div></td></tr>`}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+// ===================== REMINDERS =====================
+function getOverdueAndToday() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  // 跳过"流失"和"已成交"——这两类不需要跟进提醒
+  const skipStatuses = settings.statuses.filter(s => s.id === 'lost' || s.id === 'closed').map(s => s.id);
+  return customers.filter(c => {
+    if (!c.followupDate || skipStatuses.includes(c.status)) return false;
+    const d = new Date(c.followupDate); d.setHours(0,0,0,0);
+    return d <= today;
+  });
+}
+
+function getFollowupInfo(dateStr) {
+  if (!dateStr) return { label: '未设置', cls: 'followup-ok' };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const d = new Date(dateStr); d.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 86400000);
+  if (diff < 0) return { label: `逾期 ${-diff} 天`, cls: 'followup-overdue' };
+  if (diff === 0) return { label: '今天', cls: 'followup-today' };
+  if (diff <= 3) return { label: `${diff} 天后`, cls: 'followup-soon' };
+  return { label: `${dateStr}`, cls: 'followup-ok' };
+}
+
+function renderReminders() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const skipStatuses = settings.statuses.filter(s => s.id === 'lost' || s.id === 'closed').map(s => s.id);
+  const soonDays = settings.soonDays || 7;
+  const overdue = [], todays = [], soon = [];
+  customers.forEach(c => {
+    if (!c.followupDate || skipStatuses.includes(c.status)) return;
+    const d = new Date(c.followupDate); d.setHours(0,0,0,0);
+    const diff = Math.round((d - today) / 86400000);
+    if (diff < 0) overdue.push({ c, diff });
+    else if (diff === 0) todays.push({ c, diff });
+    else if (diff <= soonDays) soon.push({ c, diff });
+  });
+  overdue.sort((a,b) => a.diff - b.diff);
+  soon.sort((a,b) => a.diff - b.diff);
+
+  const renderGroup = (items, cls, emoji, title) => items.length ? `
+    <div style="margin-bottom:20px">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text-sub)">${emoji} ${title}（${items.length}）</h3>
+      <div class="reminder-list">
+        ${items.map(({c}) => {
+          const info = getFollowupInfo(c.followupDate);
+          return `<div class="reminder-card ${cls}">
+            <div style="font-size:24px">${PRIORITY_MAP[c.priority]?.icon || '🟡'}</div>
+            <div class="reminder-info">
+              <div class="reminder-name">${c.name}</div>
+              <div class="reminder-detail">${c.company || ''} · ${c.country || ''} · <span class="status-badge ${STATUS_MAP[c.status]?.cls||''}" style="font-size:11px">${STATUS_MAP[c.status]?.label||c.status}</span></div>
+              ${c.product ? `<div style="font-size:12px;color:var(--text-sub);margin-top:2px">产品: ${c.product}</div>` : ''}
+            </div>
+            <div style="text-align:right">
+              <div class="reminder-date ${info.cls}">${info.label}</div>
+              <div style="display:flex;gap:4px;margin-top:8px;justify-content:flex-end">
+                <button class="btn btn-secondary btn-sm" onclick="openDetail('${c.id}')">查看</button>
+                <button class="btn btn-primary btn-sm" onclick="markFollowupDone('${c.id}')">完成跟进</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>` : '';
+
+  const html = renderGroup(overdue,'overdue','🚨','已逾期') +
+               renderGroup(todays,'today','⚡','今日跟进') +
+               renderGroup(soon,'soon','📌',`${soonDays}天内到期`);
+
+  return html || `<div class="empty-state"><div class="empty-icon">✅</div><p>太棒了！暂无待跟进提醒</p><p style="margin-top:8px;font-size:12px">所有跟进计划都已处理</p></div>`;
+}
+
+function updateReminderBadge() {
+  const n = getOverdueAndToday().length;
+  const badge = document.getElementById('reminder-badge');
+  if (n > 0) { badge.style.display = ''; badge.textContent = n; }
+  else badge.style.display = 'none';
+}
+
+function markFollowupDone(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  const rd = settings.reminderDays || 7;
+  const next = new Date(); next.setDate(next.getDate() + rd);
+  const note = prompt(`已完成对 ${c.name} 的跟进。\n\n请输入跟进备注（可留空）：`);
+  if (note === null) return;
+  if (note.trim()) {
+    c.notes = c.notes || [];
+    c.notes.push({ id: genId(), text: note, channel: '跟进记录', date: new Date().toISOString().split('T')[0], createdAt: Date.now() });
+  }
+  c.followupDate = next.toISOString().split('T')[0];
+  saveData();
+  renderPage();
+  toast(`跟进已完成，下次提醒设为 ${rd} 天后`, 'success');
+}
+
+// ===================== SETTINGS PAGE =====================
+function renderSettings() {
+  const { sources, statuses, priorities, channels, reminderDays, soonDays } = settings;
+  const renderStrList = (items, key) => items.map((item, i) => `
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border)" onmouseenter="this.style.background='var(--gray-light)'" onmouseleave="this.style.background=''">
+      <span style="flex:1;font-size:13px">${item}</span>
+      <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('${key}',${i},-1)" ${i===0?'disabled':''}>↑</button>
+      <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('${key}',${i},1)" ${i===items.length-1?'disabled':''}>↓</button>
+      <button class="btn btn-secondary btn-sm" style="color:var(--danger)" onclick="removeSettingItem('${key}',${i})">×</button>
+    </div>`).join('');
+
+return `
+  <div id="settings-page">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><h3>📡 来源渠道</h3></div>
+      <div class="card-body">
+        <div style="max-height:240px;overflow-y:auto;margin-bottom:12px">${renderStrList(sources,'sources')}</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="add-source" placeholder="新渠道名称..."
+            style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none"
+            onkeydown="if(event.key==='Enter')addSettingItem('sources','add-source')">
+          <button class="btn btn-primary btn-sm" onclick="addSettingItem('sources','add-source')">＋ 添加</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>💬 沟通方式</h3></div>
+      <div class="card-body">
+        <div style="max-height:240px;overflow-y:auto;margin-bottom:12px">${renderStrList(channels,'channels')}</div>
+        <div style="display:flex;gap:8px">
+          <input type="text" id="add-channel" placeholder="新沟通方式..."
+            style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none"
+            onkeydown="if(event.key==='Enter')addSettingItem('channels','add-channel')">
+          <button class="btn btn-primary btn-sm" onclick="addSettingItem('channels','add-channel')">＋ 添加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><h3>🏷 客户状态</h3><span style="font-size:12px;color:var(--text-sub)">可改名/启停/排序</span></div>
+      <div class="card-body">
+        ${statuses.map((s,i) => `
+          <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--border)">
+            <span class="status-badge ${s.cls}" id="status-preview-${i}" style="min-width:70px;flex-shrink:0">${s.label}</span>
+            <input type="text" value="${s.label}"
+              oninput="document.getElementById('status-preview-${i}').textContent=this.value||''"
+              onblur="renameStatus(${i},this.value)"
+              style="flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;outline:none">
+            <label style="font-size:11px;display:flex;align-items:center;gap:3px;cursor:pointer;text-transform:none;letter-spacing:0;white-space:nowrap">
+              <input type="checkbox" onchange="toggleItem('statuses',${i},this.checked)" ${s.active!==false?'checked':''}>启用
+            </label>
+            <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('statuses',${i},-1)" ${i===0?'disabled':''}>↑</button>
+            <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('statuses',${i},1)" ${i===statuses.length-1?'disabled':''}>↓</button>
+          </div>`).join('')}
+        <p style="font-size:11px;color:var(--text-sub);margin-top:8px">💡 改名后立即生效；禁用的状态不会出现在新增/筛选中</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>⭐ 优先级</h3><span style="font-size:12px;color:var(--text-sub)">可改名/启停/排序</span></div>
+      <div class="card-body">
+        ${priorities.map((p,i) => `
+          <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid var(--border)">
+            <span class="priority-badge ${p.cls}" id="priority-preview-${i}" style="min-width:40px;flex-shrink:0">${p.icon} ${p.label}</span>
+            <input type="text" value="${p.label}"
+              oninput="document.getElementById('priority-preview-${i}').textContent='${p.icon} '+(this.value||'')"
+              onblur="renamePriority(${i},this.value)"
+              style="flex:1;min-width:0;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:12px;outline:none">
+            <label style="font-size:11px;display:flex;align-items:center;gap:3px;cursor:pointer;text-transform:none;letter-spacing:0;white-space:nowrap">
+              <input type="checkbox" onchange="toggleItem('priorities',${i},this.checked)" ${p.active!==false?'checked':''}>启用
+            </label>
+            <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('priorities',${i},-1)" ${i===0?'disabled':''}>↑</button>
+            <button class="btn btn-secondary btn-sm" onclick="moveSettingItem('priorities',${i},1)" ${i===priorities.length-1?'disabled':''}>↓</button>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-header"><h3>🔔 跟进提醒参数</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--text-sub);display:block;margin-bottom:6px">完成跟进后默认下次提醒（天）</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="number" id="inp-reminder-days" value="${reminderDays}" min="1" max="365"
+              style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;outline:none">
+            <span style="font-size:13px;color:var(--text-sub)">天后再次提醒</span>
+            <button class="btn btn-primary btn-sm" onclick="saveReminderParam('reminderDays','inp-reminder-days')">保存</button>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--text-sub);display:block;margin-bottom:6px">提醒页"即将到期"显示范围</label>
+          <div style="display:flex;align-items:center;gap:8px">
+            <input type="number" id="inp-soon-days" value="${soonDays}" min="1" max="60"
+              style="width:80px;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:14px;outline:none">
+            <span style="font-size:13px;color:var(--text-sub)">天内显示提醒</span>
+            <button class="btn btn-primary btn-sm" onclick="saveReminderParam('soonDays','inp-soon-days')">保存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:#fca5a5">
+    <div class="card-header" style="background:#fef2f2;border-radius:var(--radius-lg) var(--radius-lg) 0 0"><h3 style="color:var(--danger)">↩️ 恢复默认设置</h3></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:12px">恢复所有参数设置到系统默认值（不影响客户数据）</p>
+      <button class="btn btn-danger" onclick="resetSettings()">恢复默认</button>
+    </div>
+  </div>
+  </div>`;
+}
+
+function addSettingItem(key, inputId) {
+  const val = document.getElementById(inputId)?.value.trim();
+  if (!val) return;
+  if (settings[key].includes(val)) { toast('已存在相同项', 'error'); return; }
+  settings[key].push(val);
+  saveData(); renderPage();
+  toast('已添加', 'success');
+}
+
+function removeSettingItem(key, idx) {
+  if (settings[key].length <= 1) { toast('至少保留一项', 'error'); return; }
+  settings[key].splice(idx, 1);
+  saveData(); renderPage();
+}
+
+function moveSettingItem(key, idx, dir) {
+  const arr = settings[key];
+  const ni = idx + dir;
+  if (ni < 0 || ni >= arr.length) return;
+  [arr[idx], arr[ni]] = [arr[ni], arr[idx]];
+  saveData(); renderPage();
+}
+
+function toggleItem(key, idx, checked) {
+  if (!checked) {
+    const enabled = settings[key].filter(x => x.active !== false);
+    if (enabled.length <= 1) { toast('至少启用一项', 'error'); renderPage(); return; }
+  }
+  settings[key][idx].active = checked;
+  saveData(); renderPage();
+}
+
+function renameStatus(idx, val) {
+  val = val.trim();
+  if (!val) return;
+  settings.statuses[idx].label = val;
+  saveData(); rebuildMaps();
+}
+
+function renamePriority(idx, val) {
+  val = val.trim();
+  if (!val) return;
+  settings.priorities[idx].label = val;
+  saveData(); rebuildMaps();
+}
+
+function saveReminderParam(key, inputId) {
+  const v = parseInt(document.getElementById(inputId)?.value, 10);
+  if (isNaN(v) || v < 1) { toast('请输入有效的天数', 'error'); return; }
+  settings[key] = v;
+  saveData();
+  toast('已保存', 'success');
+}
+
+function resetSettings() {
+  if (!confirm('确认恢复所有设置到默认值？')) return;
+  settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+  saveData(); renderPage();
+  toast('设置已恢复默认', 'info');
+}
+
+// ===================== DATA MANAGEMENT =====================
+function renderData() {
+  return `
+  <div style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><h3>💾 数据持久化 ✅</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--text-sub);margin-bottom:10px">
+          状态：<strong>已自动保存</strong> · 每次改动即时持久化，刷新页面不丢失数据。
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="saveToJson()">📥 导出 JSON 备份</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('json-import-file').click()">📂 导入 JSON（全量替换）</button>
+          <input type="file" id="json-import-file" accept=".json" style="display:none"
+            onchange="importJsonFromFile(this)">
+        <p style="font-size:11px;color:var(--warning);margin-top:8px">⚠️ JSON 导入将<strong>完整替换</strong>现有客户数据，请先导出备份</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-header"><h3>📤 导出数据</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px">将所有客户数据导出为 CSV 文件，可用 Excel 打开编辑。</p>
+        <button class="btn btn-primary" onclick="exportCSV()">📥 下载 CSV 文件</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>📥 导入数据</h3></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px">从 CSV 文件导入客户，支持标准格式及本系统导出的格式。</p>
+        <input type="file" id="csv-import" accept=".csv" style="display:none" onchange="importCSV(this)">
+        <button class="btn btn-secondary" onclick="document.getElementById('csv-import').click()">📂 选择 CSV 文件</button>
+        <p style="font-size:11px;color:var(--text-sub);margin-top:10px">注意：导入会与现有数据合并，不会覆盖已存在客户（按邮箱/姓名+公司匹配）</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-header"><h3>📋 CSV 格式说明</h3></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:10px">支持的列名（第一行为表头）：</p>
+      <div style="background:var(--gray-light);padding:12px;border-radius:6px;font-size:12px;font-family:monospace;overflow-x:auto;white-space:nowrap">
+        id,name,company,country,source,email,phone,status,priority,product,amount,followupDate,firstContact,tags,note,notes,createdAt
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-sub)">
+        <p>• <b>status</b> 可选值: new / contacted / needs_confirmed / quoted / sample / ordered / closed / lost</p>
+        <p>• <b>priority</b> 可选值: urgent / high / medium / low / minimal</p>
+        <p>• <b>followupDate / firstContact</b> 格式: YYYY-MM-DD</p>
+        <p>• <b>tags</b> 用英文分号分隔多个标签</p>
+        <p>• <b>notes</b> 格式: 每条记录一行，用竖线分隔 "日期|渠道|内容"，多条用换行分隔</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;border-color:#fca5a5">
+    <div class="card-header" style="background:#fef2f2;border-radius:var(--radius-lg) var(--radius-lg) 0 0"><h3 style="color:var(--danger)">⚠️ 危险操作</h3></div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--text-sub);margin-bottom:12px">清空所有客户数据（操作不可撤销，请先导出备份）</p>
+      <button class="btn btn-danger" onclick="clearAllData()">🗑 清空所有数据</button>
+    </div>
+  </div>`;
+}
+
+// --- JSON file import (works on file://) ---
+function importJsonFromFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const json = JSON.parse(e.target.result);
+      if (json.customers) {
+        customers = json.customers;
+      }
+      if (json.settings) {
+        settings = Object.assign(JSON.parse(JSON.stringify(DEFAULT_SETTINGS)), json.settings);
+        rebuildMaps();
+      }
+      saveData();
+      toast('JSON 导入成功，共 ' + (json.customers ? json.customers.length : 0) + ' 条客户', 'success');
+      renderPage();
+    } catch (err) {
+      toast('JSON 格式错误：' + err.message, 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ===================== CSV EXPORT =====================
+function exportCSV() {
+  const headers = ['id','name','company','country','source','email','phone','status','priority','product','amount','followupDate','firstContact','tags','note','notes','createdAt'];
+  const rows = customers.map(c => headers.map(h => {
+    let v = c[h] ?? '';
+    if (Array.isArray(v)) {
+      if (h === 'notes') {
+        // notes: 序列化为 "日期|渠道|内容" 多行文本，导出的 CSV 可用 Excel 查看
+        v = (v || []).map(n => `${n.date || ''}|${n.channel || ''}|${n.text || ''}`).join('\n');
+      } else {
+        v = v.join(';');
+      }
+    }
+    if (typeof v === 'string' && (v.includes(',') || v.includes('"') || v.includes('\n'))) {
+      v = '"' + v.replace(/"/g, '""') + '"';
+    }
+    return v;
+  }));
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `外贸客户_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV 已导出', 'success');
+}
+
+// ===================== CSV IMPORT =====================
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const text = e.target.result.replace(/^\uFEFF/, '');
+      const lines = text.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 2) { toast('CSV 文件为空或格式不正确', 'error'); return; }
+      const headers = parseCSVRow(lines[0]);
+      let added = 0, skipped = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const vals = parseCSVRow(lines[i]);
+        if (vals.length < 2) continue;
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h.trim()] = (vals[idx] || '').trim(); });
+        // dedup check
+        const exists = customers.find(c =>
+          (obj.email && c.email === obj.email) ||
+          (obj.name && obj.company && c.name === obj.name && c.company === obj.company)
+        );
+        if (exists) { skipped++; continue; }
+        const newC = {
+          id: obj.id || genId(),
+          name: obj.name || '未知',
+          company: obj.company || '',
+          country: obj.country || '',
+          source: obj.source || '',
+          email: obj.email || '',
+          phone: obj.phone || '',
+          status: obj.status || 'new',
+          priority: obj.priority || 'medium',
+          product: obj.product || '',
+          amount: obj.amount || '',
+          followupDate: obj.followupDate || '',
+          firstContact: obj.firstContact || new Date().toISOString().split('T')[0],
+          tags: obj.tags ? obj.tags.split(';').map(t=>t.trim()).filter(Boolean) : [],
+          note: obj.note || '',
+          notes: obj.notes ? obj.notes.split('\n').filter(l => l.trim()).map(l => {
+            const parts = l.split('|');
+            return { id: genId(), date: parts[0] || '', channel: parts[1] || '', text: parts[2] || '', createdAt: Date.now() };
+          }) : [],
+          createdAt: obj.createdAt ? Number(obj.createdAt) : Date.now(),
+        };
+        customers.push(newC);
+        added++;
+      }
+      saveData();
+      renderPage();
+      toast(`导入完成：新增 ${added} 条，跳过重复 ${skipped} 条`, 'success');
+    } catch(err) {
+      toast('导入失败：' + err.message, 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseCSVRow(row) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < row.length; i++) {
+    const ch = row[i];
+    if (ch === '"') {
+      if (inQ && row[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      result.push(cur); cur = '';
+    } else cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+async function clearAllData() {
+  if (!confirm('确定要清空所有客户数据吗？此操作无法撤销！\n\n建议先导出备份。')) return;
+  if (!confirm('再次确认：将删除全部 ' + customers.length + ' 条客户记录。')) return;
+  try {
+    await idbPut('customers', []);
+    customers = [];
+    renderPage();
+    toast('所有数据已清空', 'info');
+  } catch (err) {
+    console.error('清空数据失败:', err);
+    toast('⚠️ 清空失败，请检查浏览器存储设置', 'error');
+  }
+}
+
+// ===================== MODAL HELPERS =====================
+function populateFormSelects(sourceVal, statusVal, priorityVal) {
+  // sources
+  const srcEl = document.getElementById('f-source');
+  srcEl.innerHTML = '<option value="">请选择</option>' +
+    settings.sources.map(s => `<option${s === sourceVal ? ' selected' : ''}>${s}</option>`).join('');
+
+  // statuses
+  const stsEl = document.getElementById('f-status');
+  stsEl.innerHTML = settings.statuses
+    .filter(s => s.active !== false)
+    .map(s => `<option value="${s.id}"${s.id === statusVal ? ' selected' : ''}>${s.icon || ''} ${s.label}</option>`).join('');
+
+  // priorities
+  const priEl = document.getElementById('f-priority');
+  priEl.innerHTML = settings.priorities
+    .filter(p => p.active !== false)
+    .map(p => `<option value="${p.id}"${p.id === priorityVal ? ' selected' : ''}>${p.icon || ''} ${p.label}</option>`).join('');
+
+  // channels
+  const chEl = document.getElementById('new-note-channel');
+  if (chEl) chEl.innerHTML = settings.channels.map(c => `<option>${c}</option>`).join('');
+}
+
+// ===================== MODAL =====================
+function openAddModal() {
+  currentEditId = null;
+  document.getElementById('modal-title').textContent = '新增客户';
+  clearForm();
+  const defStatus = settings.statuses.find(s => s.active !== false)?.id || 'new';
+  const defPriority = settings.priorities.find(p => p.active !== false)?.id || 'medium';
+  populateFormSelects('', defStatus, defPriority);
+  document.getElementById('f-first-contact').value = new Date().toISOString().split('T')[0];
+  const defFollowup = new Date(); defFollowup.setDate(defFollowup.getDate() + 3);
+  document.getElementById('f-followup').value = defFollowup.toISOString().split('T')[0];
+  switchModalTab('info');
+  renderNotesTimeline(null);
+  document.getElementById('customer-modal').style.display = 'flex';
+}
+
+function openEditModal(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  currentEditId = id;
+  closeDetail();
+  document.getElementById('modal-title').textContent = '编辑客户';
+  document.getElementById('f-name').value = c.name || '';
+  document.getElementById('f-company').value = c.company || '';
+  document.getElementById('f-country').value = c.country || '';
+  document.getElementById('f-email').value = c.email || '';
+  document.getElementById('f-phone').value = c.phone || '';
+  document.getElementById('f-product').value = c.product || '';
+  document.getElementById('f-amount').value = c.amount || '';
+  document.getElementById('f-followup').value = c.followupDate || '';
+  document.getElementById('f-first-contact').value = c.firstContact || '';
+  document.getElementById('f-tags').value = (c.tags||[]).join(', ');
+  document.getElementById('f-note').value = c.note || '';
+  populateFormSelects(c.source || '', c.status || 'new', c.priority || 'medium');
+  switchModalTab('info');
+  renderNotesTimeline(c);
+  document.getElementById('new-note-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('customer-modal').style.display = 'flex';
+}
+
+function clearForm() {
+  ['f-name','f-company','f-country','f-email','f-phone','f-product','f-amount','f-followup','f-first-contact','f-tags','f-note'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function closeModal() {
+  document.getElementById('customer-modal').style.display = 'none';
+  currentEditId = null;
+}
+
+function switchModalTab(tab) {
+  document.getElementById('modal-tab-info').style.display = tab === 'info' ? '' : 'none';
+  document.getElementById('modal-tab-notes').style.display = tab === 'notes' ? '' : 'none';
+  document.getElementById('tab-info').classList.toggle('active', tab === 'info');
+  document.getElementById('tab-notes').classList.toggle('active', tab === 'notes');
+  if (tab === 'notes') {
+    document.getElementById('new-note-date').value = new Date().toISOString().split('T')[0];
+    const chEl = document.getElementById('new-note-channel');
+    if (chEl) chEl.innerHTML = settings.channels.map(c => `<option>${c}</option>`).join('');
+  }
+}
+
+function saveCustomer() {
+  const name = document.getElementById('f-name').value.trim();
+  const company = document.getElementById('f-company').value.trim();
+  if (!name) { toast('请填写联系人姓名', 'error'); return; }
+
+  const tagsRaw = document.getElementById('f-tags').value;
+  const tags = tagsRaw.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
+
+  if (currentEditId) {
+    const c = customers.find(x => x.id === currentEditId);
+    if (!c) return;
+    Object.assign(c, {
+      name, company,
+      country: document.getElementById('f-country').value.trim(),
+      source: document.getElementById('f-source').value,
+      email: document.getElementById('f-email').value.trim(),
+      phone: document.getElementById('f-phone').value.trim(),
+      status: document.getElementById('f-status').value,
+      priority: document.getElementById('f-priority').value,
+      product: document.getElementById('f-product').value.trim(),
+      amount: document.getElementById('f-amount').value.trim(),
+      followupDate: document.getElementById('f-followup').value,
+      firstContact: document.getElementById('f-first-contact').value,
+      tags, note: document.getElementById('f-note').value.trim(),
+      notes: JSON.parse(JSON.stringify(tempEditNotes)),
+      updatedAt: Date.now(),
+    });
+    toast('客户信息已更新', 'success');
+  } else {
+    customers.push({
+      id: genId(),
+      name, company,
+      country: document.getElementById('f-country').value.trim(),
+      source: document.getElementById('f-source').value,
+      email: document.getElementById('f-email').value.trim(),
+      phone: document.getElementById('f-phone').value.trim(),
+      status: document.getElementById('f-status').value,
+      priority: document.getElementById('f-priority').value,
+      product: document.getElementById('f-product').value.trim(),
+      amount: document.getElementById('f-amount').value.trim(),
+      followupDate: document.getElementById('f-followup').value,
+      firstContact: document.getElementById('f-first-contact').value,
+      tags, note: document.getElementById('f-note').value.trim(),
+      notes: JSON.parse(JSON.stringify(tempEditNotes)),
+      createdAt: Date.now(),
+    });
+    toast('客户已添加', 'success');
+  }
+  saveData();
+  closeModal();
+  renderPage();
+}
+
+// ===================== NOTES =====================
+let tempEditNotes = [];
+
+function renderNotesTimeline(customer) {
+  tempEditNotes = customer ? JSON.parse(JSON.stringify(customer.notes || [])) : [];
+  refreshNotesTimeline();
+}
+
+function refreshNotesTimeline() {
+  const container = document.getElementById('notes-timeline');
+  if (!container) return;
+  const sorted = [...tempEditNotes].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  container.innerHTML = sorted.length ? sorted.map(n => `
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <div class="timeline-meta">${n.date || ''} · ${n.channel || ''}</div>
+        <div class="timeline-text">${n.text}</div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:6px" onclick="deleteNote('${n.id}')">删除</button>
+      </div>
+    </div>`).join('') : '<p style="color:var(--text-sub);font-size:13px">暂无沟通记录</p>';
+}
+
+function addNote() {
+  const text = document.getElementById('new-note-text').value.trim();
+  if (!text) { toast('请输入记录内容', 'error'); return; }
+  const note = {
+    id: genId(),
+    text,
+    channel: document.getElementById('new-note-channel').value,
+    date: document.getElementById('new-note-date').value,
+    createdAt: Date.now(),
+  };
+  tempEditNotes.push(note);
+  document.getElementById('new-note-text').value = '';
+  refreshNotesTimeline();
+  // also save to customer immediately if editing
+  if (currentEditId) {
+    const c = customers.find(x => x.id === currentEditId);
+    if (c) { c.notes = JSON.parse(JSON.stringify(tempEditNotes)); saveData(); }
+  }
+  toast('沟通记录已添加', 'success');
+}
+
+function deleteNote(noteId) {
+  tempEditNotes = tempEditNotes.filter(n => n.id !== noteId);
+  refreshNotesTimeline();
+  if (currentEditId) {
+    const c = customers.find(x => x.id === currentEditId);
+    if (c) { c.notes = JSON.parse(JSON.stringify(tempEditNotes)); saveData(); }
+  }
+}
+
+// ===================== DETAIL =====================
+function openDetail(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  currentDetailId = id;
+  document.getElementById('detail-title').textContent = `${c.name} · ${c.company || ''}`;
+  renderDetailBody(c);
+  document.getElementById('detail-modal').style.display = 'flex';
+}
+
+function renderDetailBody(c) {
+  const pm = PRIORITY_MAP[c.priority] || PRIORITY_MAP.medium;
+  const sm = STATUS_MAP[c.status] || {};
+  const info = getFollowupInfo(c.followupDate);
+  const sortedNotes = [...(c.notes||[])].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+
+  document.getElementById('detail-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">状态</div>
+        <span class="status-badge ${sm.cls||''}">${sm.label||c.status}</span>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">优先级</div>
+        <span class="priority-badge ${pm.cls}">${pm.icon} ${pm.label}</span>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">国家/地区</div>
+        <div style="font-size:14px">${c.country || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">来源渠道</div>
+        <div style="font-size:14px">${c.source || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">Email</div>
+        <div style="font-size:14px">${c.email ? `<a href="mailto:${c.email}" style="color:var(--primary)">${c.email}</a>` : '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">WhatsApp / 电话</div>
+        <div style="font-size:14px">${c.phone || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">产品需求</div>
+        <div style="font-size:14px">${c.product || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">预计金额 (USD)</div>
+        <div style="font-size:14px">${c.amount ? '$' + Number(c.amount).toLocaleString() : '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">首次联系</div>
+        <div style="font-size:14px">${c.firstContact || '—'}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">下次跟进</div>
+        <div style="font-size:14px" class="${info.cls}">${c.followupDate ? `${c.followupDate}（${info.label}）` : '未设置'}</div>
+      </div>
+    </div>
+
+    ${c.tags && c.tags.length ? `<div style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:6px">标签</div>
+      ${c.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+    </div>` : ''}
+
+    ${c.note ? `<div style="margin-bottom:16px">
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:6px">备注</div>
+      <div style="font-size:13px;background:var(--gray-light);padding:10px;border-radius:6px;line-height:1.6">${c.note}</div>
+    </div>` : ''}
+
+    <div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px">沟通记录（${sortedNotes.length}）</div>
+      ${sortedNotes.length ? `<div class="timeline">
+        ${sortedNotes.map(n => `
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-meta">${n.date || ''} · ${n.channel || ''}</div>
+              <div class="timeline-text">${n.text}</div>
+            </div>
+          </div>`).join('')}
+      </div>` : '<p style="font-size:13px;color:var(--text-sub)">暂无沟通记录，点击"编辑"添加记录</p>'}
+    </div>`;
+}
+
+function editCurrentCustomer() {
+  const id = currentDetailId;
+  closeDetail();
+  openEditModal(id);
+}
+function deleteCurrentCustomer() {
+  const id = currentDetailId;
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`确认删除客户「${c.name}」？此操作不可撤销。`)) return;
+  customers = customers.filter(x => x.id !== id);
+  saveData();
+  closeDetail();
+  renderPage();
+  toast('客户已删除', 'info');
+}
+function closeDetail() { document.getElementById('detail-modal').style.display = 'none'; currentDetailId = null; }
+
+// ===================== QUICK SET FOLLOWUP =====================
+let _quickFollowupId = null;
+function triggerQuickFollowup(id, e) {
+  _quickFollowupId = id;
+  const c = customers.find(x => x.id === id);
+  const picker = document.getElementById('quick-followup-picker');
+  const popup  = document.getElementById('quick-followup-popup');
+  document.getElementById('quick-followup-title').textContent = `设置「${c.name}」的下次跟进日期`;
+  picker.value = c.followupDate || '';
+
+  // position popup near the clicked button (use currentTarget = the button element itself)
+  const btn = e && e.currentTarget;
+  const rect = btn ? btn.getBoundingClientRect() : { top: window.innerHeight / 2, left: window.innerWidth / 2 };
+  const POPUP_W = 210, POPUP_H = 140;
+  const vpRight = window.innerWidth - POPUP_W - 8;
+  const vpBottom = window.innerHeight - POPUP_H - 8;
+  popup.style.top  = Math.min(rect.bottom + window.scrollY + 6, vpBottom) + 'px';
+  popup.style.left = Math.min(Math.max(rect.left + window.scrollX, 8), vpRight) + 'px';
+  popup.style.display = 'block';
+  setTimeout(() => picker.focus(), 50);
+
+}
+function closeQuickFollowup() {
+  document.getElementById('quick-followup-popup').style.display = 'none';
+  _quickFollowupId = null;
+  document.removeEventListener('mousedown', closeQuickFollowupOnOutside);
+}
+function closeQuickFollowupOnOutside(e) {
+  const popup = document.getElementById('quick-followup-popup');
+  if (!popup || popup.style.display === 'none') { document.removeEventListener('mousedown', closeQuickFollowupOnOutside); return; }
+  if (!popup.contains(e.target)) { closeQuickFollowup(); }
+}
+function applyQuickFollowup() {
+  const val = document.getElementById('quick-followup-picker').value;
+  if (!_quickFollowupId) return;
+  const c = customers.find(x => x.id === _quickFollowupId);
+  if (!c) { closeQuickFollowup(); return; }
+  if (!val) { toast('请选择日期', 'error'); return; }
+  c.followupDate = val;
+  saveData();
+  closeQuickFollowup();
+  renderPage();
+  toast('跟进日期已更新', 'success');
+}
+
+// ===================== TOAST =====================
+function toast(msg, type = 'info') {
+  const div = document.createElement('div');
+  div.className = `toast toast-${type}`;
+  div.textContent = msg;
+  document.getElementById('toast-container').appendChild(div);
+  setTimeout(() => div.remove(), 3000);
+}
+
+// ===================== SAMPLE DATA =====================
+// loadSampleData is intentionally empty — real data is loaded from IndexedDB at startup.
+// No hardcoded sample data to keep the system clean.
+function loadSampleData() {
+}
+
+// ===================== INIT =====================
+loadData().then(() => {
+  if (customers.length === 0) loadSampleData();
+  renderPage();
+});
+</script>
+</body>
+</html>
