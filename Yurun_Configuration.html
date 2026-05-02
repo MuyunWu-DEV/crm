@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Yurun Machinery – Configuration Detail</title>
+<style>
+  :root {
+    --navy:   #1a3a5c;
+    --blue:   #2b6cb0;
+    --sky:    #d6e4f0;
+    --accent: #e8f4fd;
+    --gold:   #d4a017;
+    --white:  #ffffff;
+    --gray:   #f5f7fa;
+    --text:   #1a1a1a;
+    --green:  #27ae60;
+    --red:    #e74c3c;
+    --shadow: 0 4px 20px rgba(26,58,92,.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  img, table { max-width: 100%; height: auto; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f0fe 0%, #f0f4f8 100%);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2c5282 100%);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px 12px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .company-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+  .company-name span { color: var(--gold); }
+  .header-badge {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .header-sub {
+    padding: 10px 40px 14px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .model-tag {
+    font-size: 15px;
+    font-weight: 600;
+    color: #90cdf4;
+  }
+  .header-sub p { font-size: 12px; color: #a0aec0; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap {
+    background: rgba(255,255,255,.1);
+    height: 4px;
+  }
+  .progress-bar-fill {
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), #f6ad55);
+    width: 0%;
+    transition: width .4s ease;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px 60px; }
+
+  /* ── SUMMARY CARD ── */
+  .summary-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 20px 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    border-left: 5px solid var(--blue);
+  }
+  .summary-item { display: flex; flex-direction: column; gap: 4px; }
+  .summary-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: .5px; }
+  .summary-value { font-size: 18px; font-weight: 700; color: var(--navy); }
+  .summary-value.highlight { color: var(--green); }
+  .summary-value.total { color: var(--blue); }
+
+  .btn-summary {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all .2s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: var(--navy); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(43,108,176,.3); }
+  .btn-outline { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+  .btn-outline:hover { background: var(--sky); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: #b8860b; color: #fff; transform: translateY(-1px); }
+  .btn-whatsapp { background: #25D366; color: #fff; }
+  .btn-whatsapp:hover { background: #1ebe5d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,211,102,.35); }
+
+  /* ── SECTION ── */
+  .section {
+    background: var(--white);
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    padding: 14px 22px;
+    cursor: pointer;
+    user-select: none;
+    transition: background .2s;
+  }
+  .section-header:hover { filter: brightness(.96); }
+  .section-icon { font-size: 22px; margin-right: 12px; }
+  .section-title { font-size: 16px; font-weight: 700; color: var(--white); flex: 1; }
+  .section-count {
+    font-size: 12px;
+    background: rgba(255,255,255,.25);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-right: 14px;
+  }
+  .section-arrow {
+    color: rgba(255,255,255,.8);
+    font-size: 14px;
+    transition: transform .3s;
+  }
+  .section.collapsed .section-arrow { transform: rotate(-90deg); }
+  .section-body { padding: 0; }
+  .section.collapsed .section-body { display: none; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  thead tr th {
+    background: #f0f4f8;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #4a5568;
+    border-bottom: 2px solid #e2e8f0;
+    text-align: left;
+  }
+  thead tr th:last-child { width: 44%; }
+
+  tbody tr {
+    border-bottom: 1px solid #edf2f7;
+    transition: background .15s;
+  }
+  tbody tr:hover { background: #f7faff; }
+  tbody tr:last-child { border-bottom: none; }
+
+  td { padding: 12px 14px; vertical-align: top; font-size: 13.5px; }
+
+  td.part-name { font-weight: 600; color: var(--navy); width: 180px; }
+  td.spec { color: #4a5568; line-height: 1.65; }
+  td.spec em { color: #718096; font-size: 12px; }
+  td.action { width: 160px; }
+
+  /* ── OPTION SELECTOR ── */
+  .options-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1.5px solid #cbd5e0;
+    background: var(--white);
+    cursor: pointer;
+    font-size: 12.5px;
+    color: #4a5568;
+    transition: all .18s;
+    text-align: left;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--sky); }
+  .option-btn.selected {
+    border-color: var(--green);
+    background: #f0faf4;
+    color: #276749;
+    font-weight: 600;
+  }
+  .option-btn .dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e0;
+    flex-shrink: 0;
+    transition: all .18s;
+  }
+  .option-btn.selected .dot {
+    border-color: var(--green);
+    background: var(--green);
+  }
+  .single-value {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: #4a5568;
+    background: var(--gray);
+    padding: 5px 10px;
+    border-radius: 8px;
+    line-height: 1.5;
+  }
+  .single-value::before { content: "✓"; color: var(--blue); font-weight: 700; }
+
+  /* spec with newlines */
+  .spec-text { white-space: pre-line; }
+
+  /* ── QUOTE FORM ── */
+  .quote-section {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    margin-top: 28px;
+    border-top: 4px solid var(--gold);
+  }
+  .quote-section h2 {
+    font-size: 18px;
+    color: var(--navy);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 12px; font-weight: 600; color: #4a5568; }
+  .form-group input, .form-group textarea {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+    font-family: inherit;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--blue); }
+  .form-group textarea { resize: vertical; min-height: 70px; grid-column: span 2; }
+  .form-actions { margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end; }
+
+  /* ── SELECTED SUMMARY PANEL ── */
+  .selected-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 320px;
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: 0 8px 40px rgba(26,58,92,.2);
+    overflow: hidden;
+    z-index: 200;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all .3s ease;
+    pointer-events: none;
+  }
+  .selected-panel.show {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .panel-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-body { padding: 12px 16px; max-height: 320px; overflow-y: auto; }
+  .panel-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 12.5px;
+    gap: 8px;
+  }
+  .panel-item:last-child { border: none; }
+  .panel-item .pi-label { color: #4a5568; flex: 1; }
+  .panel-item .pi-val { color: var(--navy); font-weight: 600; text-align: right; max-width: 140px; }
+  .panel-footer { padding: 12px 16px; border-top: 1px solid #edf2f7; }
+  .panel-close { background: none; border: none; cursor: pointer; color: rgba(255,255,255,.7); font-size: 16px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--navy); color: #fff;
+    padding: 10px 24px; border-radius: 30px;
+    font-size: 13px; font-weight: 600;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+    z-index: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+  }
+  .toast.show { opacity: 1; }
+
+  /* ── SECTION COLOR THEMES ── */
+  .theme-blue   .section-header { background: linear-gradient(135deg,#1a3a5c,#2b6cb0); }
+  .theme-green  .section-header { background: linear-gradient(135deg,#1a4731,#27ae60); }
+  .theme-orange .section-header { background: linear-gradient(135deg,#7b341e,#dd6b20); }
+  .theme-purple .section-header { background: linear-gradient(135deg,#44337a,#805ad5); }
+  .theme-teal   .section-header { background: linear-gradient(135deg,#234e52,#319795); }
+  .theme-red    .section-header { background: linear-gradient(135deg,#742a2a,#c53030); }
+  .theme-pink   .section-header { background: linear-gradient(135deg,#702459,#b83280); }
+  .theme-indigo .section-header { background: linear-gradient(135deg,#3c366b,#5a67d8); }
+
+  /* ── 防止移动端溢出 (全局保护) ── */
+  .section-count, .section-title, .company-name, .model-tag, .summary-value, .panel-item {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  @media print {
+    /* ── 页面设置 ── */
+    @page {
+      size: A4 landscape;
+      margin: 10mm 8mm 10mm 8mm;
+    }
+
+    /* ── 隐藏所有交互元素 ── */
+    .page-header .progress-bar-wrap,
+    .header-badge,
+    .header-sub p,
+    .btn-summary,
+    .summary-card,
+    .selected-panel,
+    .toast,
+    .form-actions,
+    .section-arrow,
+    .section-count,
+    .panel-footer,
+    .panel-close { display: none !important; }
+
+    /* ── 隐藏报价表单 ── */
+    .quote-section { display: none !important; }
+
+    /* ── 基础重置 ── */
+    * { box-shadow: none !important; }
+    body {
+      background: #fff !important;
+      font-size: 8.5pt !important;
+      font-family: Arial, sans-serif !important;
+      color: #000 !important;
+    }
+
+    /* ── 压缩 header ── */
+    .page-header {
+      position: static !important;
+      background: #1a3a5c !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .header-top {
+      padding: 5mm 8mm 3mm !important;
+    }
+    .company-name { font-size: 13pt !important; }
+    .header-sub { padding: 2mm 8mm 4mm !important; }
+    .model-tag  { font-size: 9pt !important; }
+
+    /* ── container ── */
+    .container { padding: 3mm 0 0 !important; max-width: 100% !important; }
+
+    /* ── sections ── */
+    .section {
+      border-radius: 0 !important;
+      margin-bottom: 2mm !important;
+      page-break-inside: avoid;
+    }
+    .section.collapsed .section-body { display: block !important; }
+
+    /* section header 紧凑 */
+    .section-header {
+      padding: 3px 8px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .section-icon  { font-size: 11pt !important; margin-right: 5px !important; }
+    .section-title { font-size: 9.5pt !important; }
+
+    /* ── table ── */
+    table { border-collapse: collapse !important; width: 100% !important; }
+
+    thead tr th {
+      font-size: 7pt !important;
+      padding: 2px 5px !important;
+      background: #e8f0fb !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      border: 1px solid #bbb !important;
+    }
+
+    tbody tr { border-bottom: 1px solid #ddd !important; page-break-inside: avoid; }
+    tbody tr:nth-child(even) td {
+      background: #f7faff !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    td {
+      padding: 2px 5px !important;
+      font-size: 8pt !important;
+      border: 1px solid #ddd !important;
+      vertical-align: middle !important;
+    }
+    td.part-name { font-size: 8pt !important; width: 120px !important; }
+    td.spec { font-size: 7.5pt !important; }
+    td.action { width: 120px !important; font-size: 7.5pt !important; }
+
+    /* ── 只打印已选项，隐藏未选按钮 ── */
+    .option-btn:not(.selected) { display: none !important; }
+    .option-btn.selected {
+      border: 1px solid #27ae60 !important;
+      background: #f0faf4 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      padding: 2px 6px !important;
+      font-size: 7.5pt !important;
+      border-radius: 4px !important;
+      display: inline-flex !important;
+      width: auto !important;
+    }
+    .option-btn.selected .dot {
+      width: 7px !important; height: 7px !important;
+      background: #27ae60 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    /* 未选择时显示破折号占位 */
+    .options-wrap:not(:has(.option-btn.selected))::after {
+      content: "—";
+      color: #999;
+      font-size: 7.5pt;
+    }
+
+    .single-value {
+      background: none !important;
+      padding: 0 !important;
+      font-size: 7.5pt !important;
+    }
+    .single-value::before { content: "" !important; }
+
+    /* 进度条隐藏 */
+    .progress-bar-wrap { display: none !important; }
+  }
+
+  @media (max-width: 768px) {
+    /* ── 全局防止溢出 ── */
+    body { word-wrap: break-word; overflow-wrap: break-word; }
+
+    /* ── HEADER ── */
+    .header-top {
+      flex-wrap: wrap;
+      padding: 10px 12px 8px;
+      gap: 6px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .company-name {
+      font-size: 14px;
+      flex: 1 1 auto;
+      min-width: 0;
+      word-break: break-word;
+    }
+    .header-badge {
+      font-size: 10px;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+    .lang-btn {
+      order: 3;
+      margin-left: auto;
+      padding: 5px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .header-sub {
+      padding: 6px 12px 10px;
+      width: 100%;
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+    .header-sub p {
+      font-size: 11px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .model-tag {
+      font-size: 12px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    /* ── SUMMARY CARD ── */
+    .container {
+      padding: 12px 8px 80px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .summary-card {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .summary-item {
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .summary-label { font-size: 10px; }
+    .summary-value { font-size: 15px; }
+    .btn-summary {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .btn-summary .btn {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 0;
+      font-size: 11px;
+      padding: 8px 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── SECTION ── */
+    .section {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 12px 14px;
+      min-height: 44px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .section-icon { font-size: 18px; margin-right: 8px; }
+    .section-title {
+      font-size: 14px;
+      word-break: break-word;
+    }
+    .section-count {
+      font-size: 11px;
+      padding: 2px 8px;
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+
+    /* ── TABLE SCROLL (关键修复) ── */
+    .section-body {
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      max-width: 100%;
+    }
+    .table-scroll table {
+      min-width: 500px;
+      width: 100%;
+    }
+    thead tr th {
+      font-size: 10px;
+      padding: 8px 8px;
+      white-space: nowrap;
+    }
+    td {
+      padding: 8px 8px;
+      font-size: 12px;
+      word-break: break-word;
+    }
+    td.part-name {
+      font-size: 12px;
+      word-break: break-word;
+    }
+    td.spec {
+      font-size: 11.5px;
+      word-break: break-word;
+    }
+    td.action {
+      min-width: 100px;
+    }
+
+    /* ── OPTION BUTTONS ── */
+    .option-btn {
+      padding: 8px 8px;
+      font-size: 11.5px;
+      min-height: 36px;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .single-value {
+      font-size: 11px;
+      padding: 4px 8px;
+      word-break: break-word;
+    }
+
+    /* ── FORM ── */
+    .quote-section {
+      width: 100%;
+      max-width: 100%;
+      padding: 16px 12px;
+    }
+    .quote-section h2 {
+      font-size: 15px;
+      word-break: break-word;
+    }
+    .form-grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      width: 100%;
+    }
+    .form-group {
+      width: 100%;
+      max-width: 100%;
+    }
+    .form-group input,
+    .form-group textarea {
+      font-size: 16px !important;
+      padding: 10px 12px;
+      min-height: 44px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .form-group label {
+      font-size: 11px;
+      word-break: break-word;
+    }
+    .form-group textarea {
+      grid-column: span 1 !important;
+    }
+    .form-actions {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .form-actions .btn {
+      flex: 1 1 100%;
+      min-width: 0;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── SELECTED PANEL (FLOATING) ── */
+    .selected-panel {
+      width: calc(100% - 16px);
+      right: 8px;
+      bottom: 8px;
+      max-height: 60vh;
+      max-width: calc(100% - 16px);
+    }
+    .panel-body {
+      max-height: 35vh;
+      overflow-y: auto;
+    }
+    .panel-item {
+      font-size: 11.5px;
+      word-break: break-word;
+    }
+    .panel-item .pi-label {
+      flex: 1;
+      word-break: break-word;
+    }
+    .panel-item .pi-val {
+      max-width: 100px;
+      word-break: break-word;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      top: auto !important;
+      bottom: 80px;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      font-size: 12px;
+      padding: 8px 16px;
+      white-space: nowrap;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── PRINT (hide non-essential) ── */
+    .btn-summary .btn:not(:last-child) { display: none; }
+  }
+
+  /* ── LANGUAGE SWITCH ── */
+  .lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all .2s;
+    letter-spacing: .3px;
+    backdrop-filter: blur(4px);
+  }
+  .lang-btn:hover {
+    background: rgba(255,255,255,.22);
+    border-color: rgba(255,255,255,.6);
+  }
+  .lang-btn .lang-label { opacity: .7; font-weight: 400; }
+  .lang-btn .lang-code { font-weight: 700; color: var(--gold); }
+
+  @media (max-width: 768px) {
+    .lang-btn { padding: 5px 12px; font-size: 12px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-top">
+    <div class="company-name">Qingdao <span>Yurun</span> Machinery Technology Co., Ltd.</div>
+    <button class="lang-btn" onclick="switchLang()" id="langBtn" title="Switch Language">
+      <span class="lang-label" id="langLabel">语言</span>
+      <span class="lang-code" id="langCode">中文</span>
+    </button>
+  </div>
+  <div class="header-sub">
+    <span class="model-tag">🔧 YRW-8101 / 408 / 508 Series Water Jet Loom</span>
+    <p id="headerSub">Please select your preferred specification for each component below.</p>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary-card">
+    <div class="summary-item">
+      <span class="summary-label" data-i18n="totalItems">Total Items</span>
+      <span class="summary-value total" id="totalCount">0</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label" data-i18n="configured">Configured</span>
+      <span class="summary-value highlight" id="configuredCount">0</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label" data-i18n="pending">Pending</span>
+      <span class="summary-value" id="pendingCount" style="color:#e53e3e">0</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-label" data-i18n="completion">Completion</span>
+      <span class="summary-value highlight" id="completionPct">0%</span>
+    </div>
+    <div class="btn-summary">
+      <button class="btn btn-outline" onclick="expandAll()" data-i18n="expandAll">Expand All</button>
+      <button class="btn btn-outline" onclick="collapseAll()" data-i18n="collapseAll">Collapse All</button>
+      <button class="btn btn-primary" onclick="showPanel()" data-i18n="viewSelection">📋 View Selection</button>
+      <button class="btn btn-outline" onclick="printQuote()" data-i18n="print">🖨️ Print</button>
+      <button class="btn btn-gold" onclick="scrollToQuote()" data-i18n="sendWA">💬 Send via WhatsApp</button>
+    </div>
+  </div>
+
+  <!-- SECTIONS -->
+  <div id="sections-wrap"></div>
+
+  <!-- QUOTE FORM -->
+  <div class="quote-section" id="quoteForm">
+    <h2 data-i18n="quoteTitle">💬 Submit Configuration via WhatsApp</h2>
+    <p id="quoteDesc" style="font-size:13px;color:#718096;margin-bottom:20px">Fill in your details below. Clicking <strong>Send via WhatsApp</strong> will open WhatsApp with your full configuration pre-filled and ready to send.</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label data-i18n="fName">Company / Name *</label>
+        <input type="text" id="fName" data-ph="fNamePh" placeholder="Your company or full name">
+      </div>
+      <div class="form-group">
+        <label data-i18n="fPhone">Contact Number *</label>
+        <input type="text" id="fPhone" data-ph="fPhonePh" placeholder="+86 ...">
+      </div>
+      <div class="form-group">
+        <label data-i18n="fEmail">Email Address</label>
+        <input type="email" id="fEmail" data-ph="fEmailPh" placeholder="example@company.com">
+      </div>
+      <div class="form-group">
+        <label data-i18n="fAddr">Shipping Address</label>
+        <input type="text" id="fAddress" data-ph="fAddrPh" placeholder="City, Province, Country">
+      </div>
+      <div class="form-group" style="grid-column:span 2">
+        <label data-i18n="fNotes">Additional Requirements / Notes</label>
+        <textarea id="fNotes" data-ph="fNotesPh" placeholder="Fabric type, quantity, delivery timeline, special requirements…"></textarea>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="resetAll()" data-i18n="resetAll">🔄 Reset All</button>
+      <button class="btn btn-primary" onclick="printQuote()" data-i18n="printPDF">🖨️ Print / Save PDF</button>
+      <button class="btn btn-whatsapp" onclick="submitQuote()">
+        <svg style="width:15px;height:15px;vertical-align:middle;margin-right:6px;fill:#fff" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        <span data-i18n="sendWABtn">Send via WhatsApp</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING PANEL -->
+<div class="selected-panel" id="selectedPanel">
+  <div class="panel-header">
+    📋 <span data-i18n="panelTitle">My Configuration</span>
+    <button class="panel-close" onclick="hidePanel()">✕</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="panel-footer">
+    <button class="btn btn-whatsapp" style="width:100%" onclick="scrollToQuote();hidePanel()" data-i18n="panelSendWA">💬 Send via WhatsApp</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const sections = [
+  {
+    id: "frame",
+    title: "Frame System",
+    icon: "🏗️",
+    theme: "theme-blue",
+    items: [
+      { id:"s1",  cn:"墙板",             en:"Side Frame",            opts:["Split Side Frame","One-Piece Side Frame"],                    note:"Yurun mold, Heavy & Precision processing, Density: 250#" },
+      { id:"s2",  cn:"铜件",             en:"Copper Parts",          opts:["ZHUJI JILONG","JIARUI"] },
+      { id:"s3",  cn:"油封",             en:"Oil Seal",              fixed:"TAIWAN TTO" },
+      { id:"s4",  cn:"主轴承箱",         en:"Main Bearing Housing",  opts:["C&U","Harbin"],                                 note:"Inner bearing: JAPAN NACHI Original" },
+      { id:"s5",  cn:"综框护板",         en:"Heald Frame Guard",     fixed:"Aluminum Alloy" },
+      { id:"s6",  cn:"曲轴",             en:"Crankshaft",            fixed:"High-class steel — Precision ground & High-frequency quenched" },
+      { id:"s7",  cn:"螺丝",             en:"Screws",                fixed:"DONGMING 304 Stainless Steel" },
+      { id:"s8",  cn:"横梁",             en:"Cross Beam",            fixed:"Specialized heavy duty · High-class steel · Pentagonal tube δ12MM" },
+      { id:"s9",  cn:"齿轮箱轴瓦/衬套",  en:"Gearbox Bushing",          fixed:"DUPONT" },
+      { id:"s10", cn:"电控及自动化系统",  en:"Electrical Control & Automation",    opts:["VEICHI","XINLIAO","QIANGYU","SANHE"] },
+      { id:"s11", cn:"传动齿轮",         en:"Transmission Gear",     fixed:"Taiwan Yuanyi — Ultra-quiet, Wear-resistant, High-precision (700#)" },
+    ]
+  },
+  {
+    id: "weft_beat",
+    title: "Weft Beating System",
+    icon: "⚙️",
+    theme: "theme-green",
+    items: [
+      { id:"wb1", cn:"打纬轴",         en:"Sley Shaft",            opts:["Standard tubular shaft 89mm×18mm","Enhanced tubular shaft"], note:"Seamless welded & Sand blasted & High-speed design" },
+      { id:"wb2", cn:"连杆铜套",       en:"Connecting Rod Bush",   fixed:"JILONG Brand" },
+      { id:"wb3", cn:"钢筘保护",       en:"Reed Guard",            fixed:"Specialized cam type" },
+      { id:"wb4", cn:"钢筘筘座",       en:"Reed Holder",           fixed:"Enhanced type · SUS304" },
+      { id:"wb5", cn:"控制面板",       en:"Control Panel",         fixed:"Thick type · Button switch" },
+      { id:"wb6", cn:"织机挡水面板",   en:"Splash Guard Panel",    fixed:"Electrophoretic Aluminum · Thickened · Double drainage trough" },
+      { id:"wb7", cn:"打纬动程",       en:"Sley Stroke",           fixed:"Precision adjustment per fabric production process" },
+    ]
+  },
+  {
+    id: "letoff",
+    title: "Let-Off System",
+    icon: "🔄",
+    theme: "theme-orange",
+    items: [
+      { id:"lo1", cn:"送经装置机构",   en:"Let-Off Motion",        opts:["Mechanical let-off","Electronic let-off"] },
+      { id:"lo2", cn:"送经齿轮箱",     en:"Let-Off Gearbox",       fixed:"Yurun special type · Professional manufacturer · Fine assembly" },
+      { id:"lo3", cn:"送经后梁",       en:"Back Rest",             fixed:"Seamless steel pipe · Quenched & tempered · Pressed SUS304" },
+      { id:"lo4", cn:"送经后梁座",     en:"Back Rest Bracket",     fixed:"Double bearings · Reinforced shaft seat" },
+      { id:"lo5", cn:"经轴边盘直径",   en:"Warp Beam Flange Ø",    opts:["800 mm","914 mm","1000 mm"] },
+      { id:"lo6", cn:"辅墙板",         en:"Auxiliary Side Frame",  fixed:"Special-shaped middle wall (Width 570 mm)" },
+    ]
+  },
+  {
+    id: "takeup",
+    title: "Take-Up System",
+    icon: "🌀",
+    theme: "theme-purple",
+    items: [
+      { id:"tu1", cn:"卷取装置机构",   en:"Take-Up Motion",        opts:["Mechanical take-up","Electronic take-up"] },
+      { id:"tu2", cn:"卷取齿轮箱",     en:"Take-Up Gearbox",       fixed:"Precision ground after gear hobbed" },
+      { id:"tu3", cn:"卷取刺毛辊",     en:"Pricker Roller",        opts:["114×10 mm","102×10 mm","165×10 mm"],           note:"Thick seamless steel tube" },
+      { id:"tu4", cn:"卷取吸水管座",   en:"Suction Pipe Holder",   fixed:"65 × 5 mm" },
+      { id:"tu5", cn:"压布辊",         en:"Pressure Roller",       fixed:"Enhanced fixed type" },
+      { id:"tu6", cn:"废边传动部分",   en:"Waste Selvage Drive",   fixed:"Specialized type" },
+    ]
+  },
+  {
+    id: "shedding",
+    title: "Shedding System",
+    icon: "📐",
+    theme: "theme-teal",
+    items: [
+      { id:"sh1", cn:"开口装置",       en:"Shedding Device",       opts:["Plain","Cam","Dobby"] },
+      { id:"sh2", cn:"综框导槽",       en:"Heald Frame Guide",     fixed:"High-quality imported materials · durable & wear-resistant" },
+      { id:"sh3", cn:"综框",           en:"Heald Frame",           opts:["4 Pieces","6 Pieces"] },
+    ]
+  },
+  {
+    id: "weft_feed",
+    title: "Weft Insertion System",
+    icon: "💧",
+    theme: "theme-red",
+    items: [
+      { id:"wf1", cn:"储纬装置",       en:"Weft Feeder",           opts:["Single Feeder","Double Feeder"] },
+      { id:"wf2", cn:"引纬泵体",       en:"Water Pump Body",       fixed:"JILONG" },
+      { id:"wf3", cn:"引纬打水凸轮",   en:"Water Pumping Cam",     fixed:"8101 special steel · Fine processing · Special joint surface treatment" },
+      { id:"wf4", cn:"引纬柱塞",       en:"Plunger",               fixed:"WUXI SHUTAI (High quality imported ceramics)" },
+      { id:"wf5", cn:"柱塞接头",       en:"Plunger Connector",     fixed:"Taiwan YEA CHEUN" },
+      { id:"wf6", cn:"引纬泵簧",       en:"Pump Spring",           fixed:"Taiwan YEA CHEUN" },
+      { id:"wf7", cn:"引纬喷嘴组合",   en:"Nozzle Assembly",       fixed:"KOREA MDH" },
+      { id:"wf8", cn:"引纬单向阀",     en:"Check Valve",           fixed:"Taiwan High-Speed check valve" },
+    ]
+  },
+  {
+    id: "elec",
+    title: "Electronic Parts",
+    icon: "⚡",
+    theme: "theme-pink",
+    items: [
+      { id:"e1",  cn:"主机电控系统",   en:"Main Electronic Control System", opts:["VEICHI","XINLIAO","SANHE","Others"] },
+      { id:"e2",  cn:"光电探纬器",     en:"Optical Feeler",        fixed:"SANLI Brand" },
+      { id:"e3",  cn:"电控系统指示灯", en:"Indicator Light",       fixed:"Four-color electronic indicator · Extra long service life" },
+      { id:"e4",  cn:"动力主电机",     en:"Main Motor",            opts:["Ordinary asynchronous motor","Energy-Saving Motor — 20–25% less power"] },
+      { id:"e5",  cn:"传动皮带",       en:"Drive Belt",            fixed:"High class quintuplet type · Super wear-resistant · CHUNGUANG" },
+    ]
+  },
+  {
+    id: "other",
+    title: "Other Configurations",
+    icon: "🔩",
+    theme: "theme-indigo",
+    items: [
+      { id:"o1",  cn:"边撑撑杆导板",   en:"Temple Rod & Guide Board",  fixed:"Φ30 mm wide & thick · SUS304" },
+      { id:"o2",  cn:"边撑",           en:"Temple",                    fixed:"JILONG Brand" },
+      { id:"o3",  cn:"油嘴 / 油封",   en:"Oil Nozzle & Seal",         fixed:"SUS304 oil nozzle + DuPont oil seal (Taiwan)" },
+      { id:"o4",  cn:"绞边装置",       en:"Leno Selvage Device",       fixed:"JILONG Brand" },
+      { id:"o5",  cn:"表面按钮座",     en:"Surface Button Holder",     fixed:"304 stainless steel spray" },
+      { id:"o6",  cn:"剪刀装置",       en:"Cutting Device",            fixed:"Yurun patented all-ceramic" },
+      { id:"o7",  cn:"关节轴承",       en:"Spherical Plain Bearing",   fixed:"Taiwan wear-resistant & waterproof type (key splashing parts)" },
+      { id:"o8",  cn:"吸水风机",       en:"Suction Fan",               fixed:"Mechanical fan" },
+      { id:"o9",  cn:"挡水面板",       en:"Water-Proof Panel",         fixed:"Yurun Special type" },
+      { id:"o10", cn:"供水稳压水箱",   en:"Constant Pressure Water Tank", fixed:"Dual-layer filtration · Bucket type" },
+      { id:"o11", cn:"整机表面处理",   en:"Overall Surface Treatment", fixed:"Sandblasting → Zinc-rich primer → Enamel paint" },
+      { id:"o12", cn:"机器防水装置",   en:"Water-Proof Devices",       fixed:"Thick curtain + Aluminum alloy panel + SUS304 channel" },
+      { id:"o13", cn:"废丝收集装置",   en:"Waste Selvage Bucket",      fixed:"High class material in uniformity color" },
+      { id:"o14", cn:"机器保修条件",   en:"Warranty",                  fixed:"1 year whole machine · 90 days consumable parts (Annex attached)" },
+      { id:"o15", cn:"整机标准件",     en:"Standard Parts",            fixed:"Brand: DONGMING" },
+    ]
+  },
+];
+
+
+// ── I18N SYSTEM ─────────────────────────────────────────────────────────────
+let currentLang = 'en';
+
+const sectionTitles = {
+  frame:      { en: 'Frame System',              zh: '机架系统' },
+  weft_beat:  { en: 'Weft Beating System',       zh: '打纬系统' },
+  letoff:     { en: 'Let-Off System',             zh: '送经系统' },
+  takeup:     { en: 'Take-Up System',             zh: '卷取系统' },
+  shedding:   { en: 'Shedding System',            zh: '开口系统' },
+  weft_feed:  { en: 'Weft Insertion System',        zh: '引纬系统' },
+  elec:       { en: 'Electronic Parts',           zh: '电气元件' },
+  other:      { en: 'Other Configurations',       zh: '其他配置' },
+};
+
+const i18n = {
+  headerSub:       { en: 'Please select your preferred specification for each component below.', zh: '请为每个零部件选择您偏好的规格配置。' },
+  totalItems:      { en: 'Total Items',  zh: '总项目数' },
+  configured:      { en: 'Configured',   zh: '已配置' },
+  pending:         { en: 'Pending',      zh: '待配置' },
+  completion:      { en: 'Completion',   zh: '完成度' },
+  expandAll:       { en: 'Expand All',       zh: '全部展开' },
+  collapseAll:     { en: 'Collapse All',     zh: '全部折叠' },
+  viewSelection:   { en: '&#x1f4cb; View Selection', zh: '&#x1f4cb; 查看选配' },
+  print:           { en: '&#x1f5a8;&#xfe0f; Print',          zh: '&#x1f5a8;&#xfe0f; 打印' },
+  sendWA:          { en: '&#x1f4ac; Send via WhatsApp', zh: '&#x1f4ac; WhatsApp 发送' },
+  thCN:            { en: '零部件 (CN)',        zh: '零部件 (中文)' },
+  thEN:            { en: 'Component (EN)',     zh: '零部件 (English)' },
+  thSpec:          { en: 'Specification / Options', zh: '规格 / 选项' },
+  thSel:           { en: 'Your Selection',     zh: '您的选择' },
+  quoteTitle:      { en: '&#x1f4ac; Submit Configuration via WhatsApp', zh: '&#x1f4ac; 通过 WhatsApp 提交配置' },
+  quoteDesc:       { en: 'Fill in your details below. Clicking <strong>Send via WhatsApp</strong> will open WhatsApp with your full configuration pre-filled and ready to send.', zh: '请填写以下信息。点击 <strong>Send via WhatsApp</strong> 将打开 WhatsApp 并自动填入您的完整配置，确认即可发送。' },
+  fName:           { en: 'Company / Name *',   zh: '公司 / 姓名 *' },
+  fPhone:          { en: 'Contact Number *',   zh: '联系电话 *' },
+  fEmail:          { en: 'Email Address',      zh: '电子邮箱' },
+  fAddr:           { en: 'Shipping Address',   zh: '收货地址' },
+  fNotes:          { en: 'Additional Requirements / Notes', zh: '附加要求 / 备注' },
+  fNamePh:         { en: 'Your company or full name', zh: '您的公司名称或全名' },
+  fPhonePh:        { en: '+86 ...', zh: '+86 ...' },
+  fEmailPh:        { en: 'example@company.com', zh: 'example@company.com' },
+  fAddrPh:         { en: 'City, Province, Country', zh: '省/市/区, 国家' },
+  fNotesPh:        { en: 'Fabric type, quantity, delivery timeline, special requirements…', zh: '织物类型、数量、交期、特殊要求…' },
+  resetAll:        { en: '&#x1f504; Reset All',    zh: '&#x1f504; 重置全部' },
+  printPDF:        { en: '&#x1f5a8;&#xfe0f; Print / Save PDF', zh: '&#x1f5a8;&#xfe0f; 打印 / 保存PDF' },
+  sendWABtn:       { en: 'Send via WhatsApp', zh: '通过 WhatsApp 发送' },
+  panelTitle:      { en: 'My Configuration',  zh: '我的配置' },
+  panelSendWA:     { en: '&#x1f4ac; Send via WhatsApp', zh: '&#x1f4ac; WhatsApp 发送' },
+  toastSelected:   { en: '✓ Selected: ', zh: '✓ 已选: ' },
+  toastFill:       { en: '⚠️ Please fill in Company/Name and Contact Number.', zh: '⚠️ 请填写公司/姓名和联系电话。' },
+  confirmUnsel:    { en: 'You have {n} item(s) not yet selected. Submit anyway?', zh: '您还有 {n} 项未选择配置，是否继续提交？' },
+  confirmReset:    { en: 'Reset all selections?', zh: '确定重置所有选择？' },
+  toastReset:      { en: '🔄 All selections reset.', zh: '🔄 所有选择已重置。' },
+  toastOpening:    { en: '✅ Opening WhatsApp…', zh: '✅ 正在打开 WhatsApp…' },
+  itemsCount:      { en: ' items', zh: ' 项' },
+  standard:        { en: '✓ Standard', zh: '✓ 标配' },
+  notSelected:     { en: 'Not selected', zh: '未选择' },
+  panelEmpty:      { en: 'No options selected yet.', zh: '暂无已选配置。' },
+  langLabel:       { en: '语言', zh: 'Language' },
+  langCode:        { en: '中文', zh: 'EN' },
+};
+
+let TXT = {};
+function syncTXT() {
+  TXT = {
+    toastSelected: i18n.toastSelected[currentLang],
+    toastFill: i18n.toastFill[currentLang],
+    confirmUnsel: i18n.confirmUnsel[currentLang],
+    confirmReset: i18n.confirmReset[currentLang],
+    toastReset: i18n.toastReset[currentLang],
+    toastOpening: i18n.toastOpening[currentLang],
+    standard: i18n.standard[currentLang],
+    notSelected: i18n.notSelected[currentLang],
+    panelEmpty: i18n.panelEmpty[currentLang],
+  };
+}
+syncTXT();
+
+function switchLang() {
+  currentLang = currentLang === 'en' ? 'zh' : 'en';
+  syncTXT();
+  applyLang();
+}
+
+function applyLang() {
+  const L = currentLang;
+
+  // Lang button
+  document.getElementById('langCode').textContent = i18n.langCode[L];
+  document.getElementById('langLabel').textContent = i18n.langLabel[L];
+
+  // Header
+  document.getElementById('headerSub').innerHTML = i18n.headerSub[L];
+  document.documentElement.lang = L === 'zh' ? 'zh-CN' : 'en';
+
+  // All [data-i18n] elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[key]) el.innerHTML = i18n[key][L];
+  });
+
+  // Placeholders
+  document.querySelectorAll('[data-ph]').forEach(el => {
+    const key = el.getAttribute('data-ph');
+    if (i18n[key]) el.placeholder = i18n[key][L];
+  });
+
+  // Rebuild sections
+  rebuildSections();
+}
+
+function rebuildSections() {
+  const L = currentLang;
+
+  sections.forEach(sec => {
+    // Section title
+    const titleEl = document.querySelector('#sec-' + sec.id + ' .section-title');
+    if (titleEl) titleEl.textContent = sectionTitles[sec.id][L];
+
+    // Items count
+    const countEl = document.querySelector('#sec-' + sec.id + ' .section-count');
+    if (countEl) countEl.textContent = sec.items.length + i18n.itemsCount[L];
+
+    // Table header texts
+    const thead = document.querySelector('#sec-' + sec.id + ' thead');
+    if (thead) {
+      const ths = thead.querySelectorAll('th');
+      if (ths[0]) ths[0].textContent = L === 'en' ? i18n.thEN[L] : i18n.thCN[L];
+      if (ths[1]) ths[1].textContent = i18n.thSpec[L];
+      if (ths[2]) ths[2].textContent = i18n.thSel[L];
+    }
+
+    // Item rows
+    const tbody = document.getElementById('tbody-' + sec.id);
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr');
+
+    sec.items.forEach((it, idx) => {
+      if (idx >= rows.length) return;
+      const row = rows[idx];
+      const partNameCell = row.querySelector('td.part-name');
+
+      const actionCell = row.querySelector('td.action');
+
+      // Update part name column based on language
+      if (partNameCell) {
+        partNameCell.textContent = L === 'en' ? it.en : it.cn;
+      }
+
+      // Update action cell labels
+      if (it.fixed && actionCell) {
+        const span = actionCell.querySelector('span');
+        if (span) span.textContent = TXT.standard;
+      } else if (actionCell) {
+        const selLabel = document.getElementById('sel-label-' + it.id);
+        if (selLabel && !state[it.id]) {
+          selLabel.textContent = TXT.notSelected;
+        }
+      }
+    });
+  });
+}
+
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+const state = {};   // itemId -> selectedOption (string)
+let totalSelectable = 0;
+
+sections.forEach(sec => {
+  sec.items.forEach(it => {
+    if (it.opts) totalSelectable++;
+    if (it.fixed) state[it.id] = it.fixed;
+  });
+});
+
+// ── BUILD DOM ─────────────────────────────────────────────────────────────────
+function buildSections() {
+  const wrap = document.getElementById('sections-wrap');
+  sections.forEach(sec => {
+    const div = document.createElement('div');
+    div.className = `section ${sec.theme}`;
+    div.id = `sec-${sec.id}`;
+
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${sec.id}')">
+        <span class="section-icon">${sec.icon}</span>
+        <span class="section-title">${sec.title}</span>
+        <span class="section-count">${sec.items.length} items</span>
+        <span class="section-arrow">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:200px">Component</th>
+              <th>Specification / Options</th>
+              <th style="width:160px">Your Selection</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-${sec.id}"></tbody>
+        </table>
+        </div>
+      </div>`;
+
+    wrap.appendChild(div);
+
+    const tbody = document.getElementById(`tbody-${sec.id}`);
+    sec.items.forEach(it => {
+      const tr = document.createElement('tr');
+
+      const partName = currentLang === 'en' ? it.en : it.cn;
+      let specHtml = '';
+      let actionHtml = '';
+
+      if (it.fixed) {
+        specHtml = `<span class="single-value">${it.fixed}</span>`;
+        actionHtml = `<span style="color:#27ae60;font-size:12px;font-weight:600">${TXT.standard}</span>`;
+      } else {
+        // build spec
+        let note = it.note ? `<br><em>${it.note}</em>` : '';
+        specHtml = `<div class="options-wrap">` +
+          it.opts.map((o,i) => `
+            <button class="option-btn" id="opt-${it.id}-${i}"
+              onclick="selectOpt('${it.id}', '${o.replace(/'/g,"\\'")}', ${i}, ${it.opts.length})">
+              <span class="dot"></span>${o}
+            </button>`).join('') +
+          `</div>${note}`;
+        actionHtml = `<span id="sel-label-${it.id}" style="font-size:12px;color:#a0aec0;font-style:italic">${TXT.notSelected}</span>`;
+      }
+
+      tr.innerHTML = `
+        <td class="part-name">${partName}</td>
+        <td class="spec">${specHtml}</td>
+        <td class="action" id="action-${it.id}">${actionHtml}</td>`;
+
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function selectOpt(itemId, value, optIdx, total) {
+  state[itemId] = value;
+
+  // update button styles
+  for (let i = 0; i < total; i++) {
+    const b = document.getElementById(`opt-${itemId}-${i}`);
+    if (b) b.classList.toggle('selected', i === optIdx);
+  }
+
+  // update action cell
+  const lbl = document.getElementById(`sel-label-${itemId}`);
+  if (lbl) {
+    lbl.style.cssText = 'font-size:12px;color:#276749;font-weight:600';
+    lbl.textContent = '✓ ' + value;
+  }
+
+  updateStats();
+  showToast(TXT.toastSelected + value);
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function countSelectable() {
+  let sel = 0;
+  sections.forEach(sec => sec.items.forEach(it => {
+    if (it.opts && state[it.id]) sel++;
+  }));
+  return sel;
+}
+
+function updateStats() {
+  const configured = countSelectable();
+  const pending = totalSelectable - configured;
+  const pct = totalSelectable ? Math.round(configured / totalSelectable * 100) : 0;
+
+  document.getElementById('totalCount').textContent = totalSelectable;
+  document.getElementById('configuredCount').textContent = configured;
+  document.getElementById('pendingCount').textContent = pending;
+  document.getElementById('completionPct').textContent = pct + '%';
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ── TOGGLE ────────────────────────────────────────────────────────────────────
+function toggleSection(id) {
+  document.getElementById(`sec-${id}`).classList.toggle('collapsed');
+}
+function expandAll()   { sections.forEach(s => document.getElementById(`sec-${s.id}`).classList.remove('collapsed')); }
+function collapseAll() { sections.forEach(s => document.getElementById(`sec-${s.id}`).classList.add('collapsed')); }
+
+// ── PANEL ─────────────────────────────────────────────────────────────────────
+function showPanel() {
+  const body = document.getElementById('panelBody');
+  body.innerHTML = '';
+  let hasAny = false;
+  sections.forEach(sec => {
+    sec.items.forEach(it => {
+      const val = state[it.id];
+      if (!val || it.fixed) return;
+      hasAny = true;
+      body.innerHTML += `
+        <div class="panel-item">
+          <span class="pi-label">${currentLang === 'en' ? it.en : it.cn}</span>
+          <span class="pi-val">${val}</span>
+        </div>`;
+    });
+  });
+  if (!hasAny) {
+    body.innerHTML = '<p style="color:#a0aec0;font-size:13px;text-align:center;padding:16px">' + TXT.panelEmpty + '</p>';
+  }
+  document.getElementById('selectedPanel').classList.add('show');
+}
+function hidePanel() { document.getElementById('selectedPanel').classList.remove('show'); }
+
+// ── QUOTE ─────────────────────────────────────────────────────────────────────
+function scrollToQuote() {
+  document.getElementById('quoteForm').scrollIntoView({ behavior:'smooth' });
+}
+
+function submitQuote() {
+  const name    = document.getElementById('fName').value.trim();
+  const phone   = document.getElementById('fPhone').value.trim();
+
+  if (!name || !phone) {
+    showToast(TXT.toastFill);
+    document.getElementById('quoteForm').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+
+  const configured = countSelectable();
+  const pct = totalSelectable ? Math.round(configured / totalSelectable * 100) : 0;
+
+  if (pct < 100) {
+    if (!confirm(TXT.confirmUnsel.replace('{n}', totalSelectable - configured))) return;
+  }
+
+  // ── Build WhatsApp message ──
+  const SEP = '--------------------';
+  let msg = `*[Yurun Machinery - Configuration Request]*\n`;
+  msg += `${SEP}\n`;
+  msg += `*Company / Name:* ${name}\n`;
+  msg += `*Phone:* ${phone}\n`;
+  const email   = document.getElementById('fEmail').value.trim();
+  const address = document.getElementById('fAddress').value.trim();
+  const notes   = document.getElementById('fNotes').value.trim();
+  if (email)   msg += `*Email:* ${email}\n`;
+  if (address) msg += `*Address:* ${address}\n`;
+  if (notes)   msg += `*Notes:* ${notes}\n`;
+  msg += `${SEP}\n`;
+  msg += `*Selected Configuration:*\n`;
+
+  sections.forEach(sec => {
+    let secLines = [];
+    sec.items.forEach(it => {
+      if (it.opts && state[it.id]) {
+        secLines.push(`- ${it.en}: ${state[it.id]}`);
+      }
+    });
+    if (secLines.length) {
+      msg += `\n*${sec.title}*\n` + secLines.join('\n') + '\n';
+    }
+  });
+
+  msg += `${SEP}\n`;
+  msg += `_Sent via Yurun Configuration Tool_`;
+
+  // ── Open WhatsApp ──
+  // Use encodeURIComponent then replace %20 with + for better compatibility
+  const waNumber = '8619857147744'; // +86 19857147744
+  const encoded = encodeURIComponent(msg).replace(/%20/g, '+');
+  const waUrl = `https://wa.me/${waNumber}?text=${encoded}`;
+  window.open(waUrl, '_blank');
+
+  showToast(TXT.toastOpening);
+}
+
+function resetAll() {
+  if (!confirm(TXT.confirmReset)) return;
+  sections.forEach(sec => {
+    sec.items.forEach(it => {
+      if (it.opts) {
+        delete state[it.id];
+        for (let i = 0; i < it.opts.length; i++) {
+          const b = document.getElementById(`opt-${it.id}-${i}`);
+          if (b) b.classList.remove('selected');
+        }
+        const lbl = document.getElementById(`sel-label-${it.id}`);
+        if (lbl) { lbl.style.cssText='font-size:12px;color:#a0aec0;font-style:italic'; lbl.textContent=TXT.notSelected; }
+      }
+    });
+  });
+  updateStats();
+  showToast(TXT.toastReset);
+}
+
+function printQuote() {
+  // 记录折叠状态，打印前全部展开
+  const collapsed = sections.map(s => document.getElementById(`sec-${s.id}`).classList.contains('collapsed'));
+  expandAll();
+  // 短暂延迟确保 DOM 渲染完成再打印
+  setTimeout(() => {
+    window.print();
+    // 打印对话框关闭后恢复折叠状态
+    setTimeout(() => {
+      sections.forEach((s, i) => {
+        if (collapsed[i]) document.getElementById(`sec-${s.id}`).classList.add('collapsed');
+      });
+    }, 500);
+  }, 150);
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+buildSections();
+updateStats();
+</script>
+</body>
+</html>
