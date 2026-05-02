@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Yurun Spare Parts</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+}
+.header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white; padding: 12px 15px; text-align: center;
+    position: sticky; top: 0; z-index: 100;
+}
+.header h1 { font-size: 18px; font-weight: 600; }
+.header .count { opacity: 0.9; font-size: 13px; margin-top: 4px; }
+.search-box {
+    width: calc(100% - 24px); margin: 10px 12px; padding: 10px 12px;
+    border: 1px solid #ddd; border-radius: 6px; font-size: 14px;
+}
+.table-container { padding: 0 8px 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+th {
+    padding: 10px 8px; text-align: left; font-weight: 600;
+    font-size: 12px; cursor: pointer; user-select: none; white-space: nowrap;
+}
+td { padding: 8px; border-bottom: 1px solid #e8e8e8; vertical-align: middle; }
+tbody tr:hover { background: #e8f4fc; }
+tbody tr:nth-child(even) { background: #fafafa; }
+tbody tr:nth-child(even):hover { background: #e8f4fc; }
+.no-wrap { white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>Yurun Spare Parts</h1>
+    <div class="count">Total: <span id="visible-count">82</span> items</div>
+</div>
+
+<input type="search" class="search-box" id="searchInput" placeholder="Search parts..." autofocus>
+
+<div class="table-container">
+    <table id="partsTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">#</th>
+                <th onclick="sortTable(1)">Chinese</th>
+                <th onclick="sortTable(2)">English</th>
+                <th onclick="sortTable(3)">Model</th>
+                <th onclick="sortTable(4)">Qty</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+<tr><td class="no-wrap">1</td><td>主板</td><td>MAIN CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">2</td><td>储纬器主板</td><td>FEEDER CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">3</td><td></td><td>FEEDER HOOK PIN</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">4</td><td></td><td>BREAK CARD PANEL</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">5</td><td></td><td>MAIN MOTER</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">6</td><td>无级变速器</td><td>ZEROMAX (NIDEC SHIMPO JAPAN)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">8</td><td>柱塞套件</td><td>PLUNGER KIT 36/24</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">9</td><td>水泵</td><td>PUMP (JL)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">10</td><td>单向阀号</td><td>ONE WAY VALVE SHEET 6</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">11</td><td>单向阀号</td><td>ONE WAY VALVE SHEET 8</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">12</td><td>手动润滑油泵</td><td>GREASING PUMP</td><td></td><td>0</td></tr>
+<tr><td class="no-wrap">13</td><td>轴承</td><td>BEARING</td><td>6006,6206,6210</td><td>1</td></tr>
+<tr><td class="no-wrap">14</td><td>轴承</td><td>BEARING</td><td>6201,6308,6306</td><td>1</td></tr>
+<tr><td class="no-wrap">15</td><td>耳丝机</td><td>LENO WENDER MACHINE</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">16</td><td>光探</td><td>FILLRER WIRE</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">17</td><td>轴承</td><td>NURT 15</td><td></td><td>2</td></tr>
+<tr><td class="no-wrap">18</td><td>轴承</td><td>NURT 19/16</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">19</td><td>泵簧</td><td>PUMP SPRING</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">20</td><td>水泵型环</td><td>PUMP O-RING</td><td></td><td>20</td></tr>
+<tr><td class="no-wrap">21</td><td>柱塞连杆</td><td>PUMP PATTI</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">22</td><td>水泵别针</td><td>PUMP PIN</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">23</td><td>水泵凸轮</td><td>PUMP CAM</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">24</td><td>环</td><td>PU RING</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">25</td><td>剪刀片左</td><td>CUTTER BLADE LEFT</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">26</td><td>剪刀片右</td><td>CUTTER BLADE RIGHT</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">27</td><td>剪刀轴左</td><td>CUTTER SHAFT LEFT</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">28</td><td>耳丝齿轮轴接头</td><td>LENO GEAR SHAFT NIPPLE</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">29</td><td>耳丝齿轮轴垫圈</td><td>LENO GEAR SHAFT WASHER</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">30</td><td>耳丝锁片</td><td>LENO LOCK PATTI</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">31</td><td>耳丝支架杆</td><td>LENO HOLDER SHAFT</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">32</td><td>耳丝轮衬套</td><td>LENO BOBIN BUSH</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">33</td><td>耳丝齿轮齿</td><td>LENO GEAR 21T</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">34</td><td>耳丝弹簧</td><td>LENO SPRING</td><td></td><td>25</td></tr>
+<tr><td class="no-wrap">35</td><td>剪刀轴右</td><td>CUTTER SHAFT RIGHT</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">36</td><td>耳丝星号橡胶</td><td>LENO STAR RUBBER</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">37</td><td>耳丝弹簧稳定器</td><td>LENO SPRING STABILLIZER</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">38</td><td>耳丝弹簧钩</td><td>LENO SPRING HOOK</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">39</td><td>耳丝小件</td><td>LENO PAUL</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">40</td><td>耳丝磁钩</td><td>LENO MAGNET</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">41</td><td>耳丝螺母</td><td>LENO MF NUT</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">42</td><td>耳丝弹簧钩</td><td>LENO PIN</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">43</td><td>耳丝支架</td><td>LENO HOLDER</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">44</td><td>丝导</td><td>YARN GUIDE</td><td></td><td>2</td></tr>
+<tr><td class="no-wrap">45</td><td>综框钩</td><td>FRAME HOOK</td><td></td><td>50</td></tr>
+<tr><td class="no-wrap">46</td><td>皮带</td><td>BELT</td><td>3VX1X</td><td>1</td></tr>
+<tr><td class="no-wrap">47</td><td>皮带</td><td>BELT</td><td>ZEROMAX</td><td>1</td></tr>
+<tr><td class="no-wrap">48</td><td>皮带</td><td>BELT</td><td>MX33</td><td>1</td></tr>
+<tr><td class="no-wrap">49</td><td>皮带</td><td>BELT</td><td>MX29</td><td>1</td></tr>
+<tr><td class="no-wrap">50</td><td>主电机皮带</td><td>BELT</td><td>MAIN MOTER</td><td>1</td></tr>
+<tr><td class="no-wrap">51</td><td></td><td>PEAK SHAFT</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">52</td><td></td><td>PEAK SLEEVE</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">53</td><td>轴承</td><td>BEARING</td><td>607</td><td>5</td></tr>
+<tr><td class="no-wrap">54</td><td>轴承</td><td>BEARING</td><td>6000</td><td>3</td></tr>
+<tr><td class="no-wrap">55</td><td>轴承</td><td>BEARING</td><td>6001</td><td>3</td></tr>
+<tr><td class="no-wrap">56</td><td>弹簧垫圈</td><td>SPRING WAISHER</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">57</td><td>螺栓螺</td><td>BOLT AND NUT</td><td></td><td>1 box</td></tr>
+<tr><td class="no-wrap">58</td><td>废丝轮滑轮小号</td><td>CATCHCOT PULLY SMALL</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">59</td><td>废丝滑轮大号</td><td>CATCHCOT PULLY BIG</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">60</td><td>废丝片</td><td>CATHCOT PLATE</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">61</td><td>油封</td><td>OIL SEAL</td><td>12*19*3</td><td>2</td></tr>
+<tr><td class="no-wrap">62</td><td>油封</td><td>OIL SEAL</td><td>25*40*7</td><td>2</td></tr>
+<tr><td class="no-wrap">63</td><td>油封</td><td>OIL SEAL</td><td>28*45*8</td><td>1</td></tr>
+<tr><td class="no-wrap">64</td><td>油封</td><td>OIL SEAL</td><td>35*52*7</td><td>1</td></tr>
+<tr><td class="no-wrap">65</td><td>油封</td><td>OIL SEAL</td><td>48*65*10</td><td>1</td></tr>
+<tr><td class="no-wrap">66</td><td>油封</td><td>OIL SEAL</td><td>30*52*8</td><td>1</td></tr>
+<tr><td class="no-wrap">67</td><td>油封</td><td>OIL SEAL</td><td>70*88*12</td><td>1</td></tr>
+<tr><td class="no-wrap">68</td><td>润滑油头平口</td><td>GREASE NIPPLE 6MM PLAIN</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">69</td><td>润滑油头度角</td><td>GREASE NIPPLE 10MM 45°</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">70</td><td>换向阀联轴器</td><td>CHANGE VALVE COUPLIN</td><td></td><td>2</td></tr>
+<tr><td class="no-wrap">71</td><td>销子</td><td>KEY</td><td>5*5*12</td><td>3</td></tr>
+<tr><td class="no-wrap">72</td><td>销子</td><td>KEY</td><td>5*5*15</td><td>3</td></tr>
+<tr><td class="no-wrap">73</td><td>销子</td><td>KEY</td><td>6*6*15</td><td>3</td></tr>
+<tr><td class="no-wrap">74</td><td>销子</td><td>KEY</td><td>6*6*20</td><td>3</td></tr>
+<tr><td class="no-wrap">75</td><td>销子</td><td>KEY</td><td>7*7*22</td><td>3</td></tr>
+<tr><td class="no-wrap">76</td><td>销子</td><td>KEY</td><td>7*7*25</td><td>3</td></tr>
+<tr><td class="no-wrap">77</td><td>连接螺栓</td><td>JONT BOLT 6MM</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">78</td><td>钢筘夹</td><td>REED CLAMP</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">79</td><td>六角螺母</td><td>HEX NUT</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">80</td><td>综丝</td><td>HEALD WIRE PLAIN</td><td></td><td>10000</td></tr>
+<tr><td class="no-wrap">81</td><td></td><td>HEALD WIRE CAM</td><td></td><td>12000</td></tr>
+<tr><td class="no-wrap">82</td><td></td><td>HEALD WIRE DOBBY</td><td></td><td>12000</td></tr>
+<tr><td class="no-wrap">83</td><td></td><td>CAM & DOBBY PART STANDARD</td><td></td><td></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const tableBody = document.getElementById('tableBody');
+const rows = tableBody.getElementsByTagName('tr');
+const visibleCount = document.getElementById('visible-count');
+
+searchInput.addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    let visible = 0;
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.textContent.toLowerCase().includes(searchTerm)) {
+            row.style.display = '';
+            visible++;
+        } else {
+            row.style.display = 'none';
+        }
+    }
+    visibleCount.textContent = visible;
+});
+
+let sortDir = {};
+function sortTable(colIndex) {
+    sortDir[colIndex] = !sortDir[colIndex];
+    const dir = sortDir[colIndex] ? 1 : -1;
+    const tbody = tableBody;
+    const rowsArray = Array.from(tbody.rows);
+    rowsArray.sort((a, b) => {
+        const aText = a.cells[colIndex].textContent.trim();
+        const bText = b.cells[colIndex].textContent.trim();
+        const aNum = parseFloat(aText);
+        const bNum = parseFloat(bText);
+        if (!isNaN(aNum) && !isNaN(bNum)) return (aNum - bNum) * dir;
+        return aText.localeCompare(bText) * dir;
+    });
+    rowsArray.forEach(row => tbody.appendChild(row));
+}
+</script>
+</body>
+</html>
