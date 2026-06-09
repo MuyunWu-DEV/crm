@@ -434,7 +434,6 @@
             </div>
           </div>
           <textarea id="new-note-text" placeholder="记录沟通内容、客户反馈、下一步行动..." style="min-height:80px;width:100%;resize:vertical;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;margin-bottom:10px"></textarea>
-          <button class="btn btn-primary" style="width:100%;padding:10px;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(37,99,235,.25)" onclick="addNote()">+ 添加记录</button>
         </div>
         <div id="notes-timeline" class="timeline"></div>
       </div>
@@ -1363,6 +1362,21 @@ function saveCustomer() {
   const name = document.getElementById('f-name').value.trim();
   const company = document.getElementById('f-company').value.trim();
   if (!name) { toast('请填写联系人姓名', 'error'); return; }
+
+  // Check if communication record input is not empty, and add it if so
+  const noteText = document.getElementById('new-note-text').value.trim();
+  if (noteText) {
+    const note = {
+      id: genId(),
+      text: noteText,
+      channel: document.getElementById('new-note-channel').value,
+      date: document.getElementById('new-note-date').value,
+      createdAt: Date.now(),
+    };
+    tempEditNotes.push(note);
+    document.getElementById('new-note-text').value = '';
+    refreshNotesTimeline();
+  }
 
   const tagsRaw = document.getElementById('f-tags').value;
   const tags = tagsRaw.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
