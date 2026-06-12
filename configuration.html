@@ -353,7 +353,6 @@
 
   /* ── 防止移动端溢出 (全局保护) ── */
   .section-count, .section-title, .company-name, .model-tag, .summary-value, .panel-item {
-    word-break: break-word;
     overflow-wrap: break-word;
   }
 
@@ -485,6 +484,9 @@
       font-size: 7.5pt !important;
     }
     .single-value::before { content: "" !important; }
+
+    /* detail rows in print */
+    .row-detail-tr { display: none !important; }
 
     /* 进度条隐藏 */
     .progress-bar-wrap { display: none !important; }
@@ -741,6 +743,120 @@
     .btn-summary .btn:not(:last-child) { display: none; }
   }
 
+  /* ── ROW DETAIL EXPAND PANEL ── */
+  .row-detail-tr { display: none; }
+  .row-detail-tr.open { display: table-row; }
+
+  .row-detail-cell {
+    padding: 0 !important;
+    background: #f8fbff;
+    border-bottom: 2px solid #dbeafe !important;
+  }
+
+  .row-detail-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 18px 22px 20px;
+    animation: detailFadeIn .22s ease;
+  }
+
+  @keyframes detailFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-block-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: #7090b0;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .detail-desc {
+    font-size: 13px;
+    color: #3a4a60;
+    line-height: 1.7;
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1px solid #e2eaf4;
+    min-height: 80px;
+  }
+
+  .detail-img-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f4f8;
+    border: 1.5px dashed #90a4b7;
+    border-radius: 8px;
+    min-height: 120px;
+    flex-direction: column;
+    gap: 8px;
+    color: #90a4b7;
+  }
+  .detail-img-slot .slot-icon { font-size: 28px; opacity: .55; }
+  .detail-img-slot .slot-label { font-size: 11px; font-style: italic; }
+  .detail-img-slot img { width: 100%; height: auto; max-height: 260px; object-fit: contain; border-radius: 7px; display: block; background:#fff; }
+
+  /* clickable row highlight */
+  tr.has-detail td.part-name {
+    cursor: pointer;
+    position: relative;
+  }
+  tr.has-detail td.part-name::after {
+    content: "▸";
+    font-size: 10px;
+    color: #90a4b7;
+    margin-left: 5px;
+    transition: transform .2s;
+    display: inline-block;
+  }
+  tr.has-detail.detail-open td.part-name::after {
+    transform: rotate(90deg);
+    color: var(--blue);
+  }
+  tr.has-detail:hover td.part-name { color: var(--blue); }
+
+  @media (max-width: 768px) {
+    .row-detail-inner {
+      grid-template-columns: 1fr;
+      padding: 12px 10px 14px;
+      gap: 12px;
+    }
+  }
+
+  /* ── IMAGE PLACEHOLDER (inline in spec cell, legacy) ── */
+  .img-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 200px;
+    height: 90px;
+    background: #f0f4f8;
+    border: 1.5px dashed #90a4b7;
+    border-radius: 8px;
+    color: #90a4b7;
+    font-size: 11px;
+    font-style: italic;
+    gap: 6px;
+    margin-top: 8px;
+    flex-direction: column;
+  }
+  .img-placeholder .img-icon { font-size: 22px; opacity: .6; }
+  .img-placeholder .img-label { font-size: 10.5px; color: #aab; }
+
+  @media (max-width: 768px) {
+    .img-placeholder { max-width: 100%; height: 70px; }
+  }
+
   /* ── LANGUAGE SWITCH ── */
   .lang-btn {
     display: flex;
@@ -883,17 +999,50 @@ const sections = [
     icon: "🏗️",
     theme: "theme-blue",
     items: [
-      { id:"s1",  cn:"墙板",             en:"Side Frame",            opts:["Split Side Frame (580KG)","One-Piece Side Frame (600KG)"],                    note:"Yurun mold, Heavy & Precision processing, Density: 250#" },
-      { id:"s2",  cn:"铜件",             en:"Copper Parts",          opts:["ZHUJI JILONG","JIARUI"] },
-      { id:"s3",  cn:"油封",             en:"Oil Seal",              fixed:"TAIWAN TTO" },
-      { id:"s4",  cn:"主轴承（箱体内）",         en:"Main Bearing (in Housing)",  opts:["C&U","Harbin"],                                 note:"Inner bearing: JAPAN NACHI Original" },
-      { id:"s5",  cn:"综框护板",         en:"Heald Frame Guard",     fixed:"Aluminum Alloy" },
-      { id:"s6",  cn:"曲轴",             en:"Crankshaft",            fixed:"High-class steel — Precision ground & High-frequency quenched" },
-      { id:"s7",  cn:"螺丝",             en:"Screws",                fixed:"DONGMING 304 Stainless Steel" },
-      { id:"s8",  cn:"横梁",             en:"Cross Beam",            fixed:"Specialized heavy duty · High-class steel · Pentagonal tube δ12MM" },
-      { id:"s9",  cn:"齿轮箱轴瓦/衬套",  en:"Gearbox Bushing",          fixed:"DUPONT" },
-      { id:"s10", cn:"电控及自动化系统",  en:"Electrical Control & Automation",    opts:["VEICHI","XINLIAO","QIANGYU","SANHE"] },
-      { id:"s11", cn:"传动齿轮",         en:"Transmission Gear",     fixed:"Taiwan Yuanyi — Ultra-quiet, Wear-resistant, High-precision (700#)" },
+      { id:"s1",  cn:"墙板",             en:"Side Frame",            opts:["Split Side Frame (580KG)","One-Piece Side Frame (600KG)"],                    note:"Yurun mold, Heavy & Precision processing, Density: 250#",
+        desc:"The side frame is the structural backbone of the loom, directly absorbing all dynamic shock loads at up to 800+ RPM. Yurun uses proprietary-mold 250# high-density cast iron — denser and more vibration-damping than the common 200# or 220# iron used by many competitors. Journals are precision-bored on CNC machining centers to tolerance within 0.01mm. One-piece type eliminates mid-section joint flex and is recommended for speeds above 700 RPM where rigidity is critical." ,
+        desc_cn:"墙板是织机的结构骨架，直接承受 800+ RPM 下的全部动态冲击载荷。钰润采用自有专利模具铸造 250# 高密度铸铁——比市场主流竞品普遍使用的 200# 或 220# 铁水密度更高、减震性更强。关键孔系在 CNC 加工中心精密镗孔，公差控制在 0.01mm 以内。整体式消除中段接合面变形，推荐 700 RPM 以上高速应用，刚性更有保障。",
+      },
+      { id:"s2",  cn:"铜件",             en:"Copper Parts",          opts:["ZHUJI JILONG","JIARUI"],
+        desc:"Copper bushings and eccentric sleeves are the highest-wear items in the loom's gear train and crank system. ZHUJI JILONG is the recognized industry benchmark for water jet loom copper parts, with casting alloy formulations and heat treatment processes developed specifically for the high-cycle-load conditions of textile machinery. Compared to generic copper parts, JILONG parts show measurably tighter bore tolerances (±0.03mm vs. ±0.08mm typical) and more consistent Brinell hardness — translating into longer service life and fewer unplanned stops. JIARUI offers a cost-effective alternative where budget is a primary constraint." ,
+        desc_cn:"铜件（偏心套、综框轴瓦等）是织机齿轮系和曲柄系统中磨损最快的部件。诸暨吉龙是喷水织机铜件公认的行业标杆，其合金配方和热处理工艺专为纺织机械高循环载荷工况开发。与普通铜件相比，吉龙铜件孔径公差更紧（±0.03mm vs. 普通件 ±0.08mm），布氏硬度更稳定——直接带来更长使用寿命和更少非计划停机。嘉瑞为预算优先的客户提供性价比替代方案。",
+      },
+      { id:"s3",  cn:"油封",             en:"Oil Seal",              fixed:"TAIWAN TTO",
+        desc:"Oil seals are the first line of defence against lubricant loss and water ingress at every rotating shaft. Taiwan TTO seals are specified because standard domestic oil seals degrade rapidly in the constant water-spray environment inside a water jet loom — the rubber compound softens, the sealing lip wears faster, and lubricant leakage begins within months. TTO uses a proprietary water-resistant elastomer compound that retains its sealing lip geometry and hardness for 3–5× longer service life compared to generic seals, significantly reducing maintenance frequency and lubricant consumption." ,
+        desc_cn:"油封是每根旋转轴处防止润滑油流失和水分侵入的第一道防线。选用台湾 TTO 的原因在于：普通国产油封在喷水织机持续水雾环境中迅速劣化——橡胶材料软化、唇口加速磨损，数月内即出现漏油。TTO 采用专有抗水弹性体配方，在潮湿环境下密封唇型和硬度保持能力是普通密封件的 3–5 倍，显著降低维护频次和润滑油消耗。",
+      },
+      { id:"s4",  cn:"主轴承（箱体内）",         en:"Main Bearing (in Housing)",  opts:["C&U","Harbin"],                                 note:"Inner bearing: JAPAN NACHI Original",
+        desc:"The main crankshaft bearing operates at 500–800 RPM under heavy, constantly reversing loads — it is one of the most demanding bearing applications in the machine. Japan NACHI bearings are used at the critical inner (fixed) position: NACHI's ultra-precision grinding delivers P5/P4-grade tolerances and superior surface finish on raceways, reducing friction heat and extending fatigue life well beyond standard domestic bearings. The outer (housing) bearing can be specified as C&U (China's highest-grade ball/roller bearing brand, ISO-certified, with traceability) or Harbin (Chinese national standard, the most widely stocked brand for rapid after-service sourcing across Asia)." ,
+        desc_cn:"主曲轴轴承在 500–800 RPM 下承受大量持续反向载荷，是机器中工况最苛刻的轴承应用之一。内侧（固定端）选用日本 NACHI：NACHI 超精密磨削达到 P5/P4 级公差，滚道表面粗糙度优于国产标准轴承，降低摩擦热量，疲劳寿命远超普通国产轴承。外侧（轴承座端）可选 C&U（中国最高级别滚动轴承品牌，ISO 认证，具备全程追溯性）或哈轴（国标品牌，亚洲备件库存最广，售后采购最快捷）。",
+      },
+      { id:"s5",  cn:"综框护板",         en:"Heald Frame Guard",     fixed:"Aluminum Alloy", img:true,
+        desc:"Heald frame guards protect the reciprocating heald frames from lateral impact and stabilize frame motion at high RPM. Aluminum alloy offers a unique combination that competing materials (plastic guards or steel guards) cannot match: it is 3× lighter than steel — directly reducing inertia loads on the shedding cams and extending cam/follower life — yet rigid enough to maintain positional accuracy. It also resists corrosion without surface treatment, unlike steel which rusts in the wet weaving environment." ,
+        desc_cn:"综框护板保护往复运动的综框免受横向冲击，并在高速运转中稳定综框运动轨迹。铝合金具有竞争材料（塑料护板或钢板）无法兼顾的优势：比钢轻 3 倍，直接减轻开口凸轮和滚子的惯性载荷，延长凸轮副寿命；同时具备足够的刚性维持位置精度；无需表面处理即可抗腐蚀，而钢板在喷水环境中容易锈蚀。",
+      },
+      { id:"s6",  cn:"曲轴",             en:"Crankshaft",            fixed:"High-class steel — Precision ground & High-frequency quenched", img:true,
+        desc:"The crankshaft converts main motor rotation into the reciprocating sley beat and water pump stroke at every single pick — typically 500–800 million cycles over a machine's working life. Many competitor machines use standard forged steel shafts with induction hardening to only HRC45–50. Yurun crankshafts are made from high-class alloy steel (equivalent to 40Cr or 42CrMo), precision-ground to within 0.005mm on all journals, and high-frequency quenched to above HRC58 — reducing journal wear rate by over 50% and extending the shaft's maintenance-free period from the typical 3 years to 5+ years." ,
+        desc_cn:"曲轴在每一纬引纬中驱动打纬和泵柱塞往复运动——机器全寿命周期约经历 5–8 亿次循环。许多竞品仅使用普通锻钢，感应淬火硬度仅达 HRC45–50。钰润曲轴采用优质合金钢（相当于 40Cr 或 42CrMo），所有轴颈精密磨削公差 ±0.005mm，高频淬火硬度达 HRC58 以上——轴颈磨损速率降低 50% 以上，无维护使用周期从行业普遍 3 年延长至 5 年以上。",
+      },
+      { id:"s7",  cn:"螺丝",             en:"Screws",                fixed:"DONGMING 304 Stainless Steel", img:true,
+        desc:"Water jet looms present one of the most corrosive environments for fasteners — constant water spray, high humidity, and detergent residues. Most low-cost looms use standard carbon steel or zinc-plated screws that rust and seize within 1–2 years, making disassembly for maintenance extremely difficult and time-consuming. Yurun standardizes on DONGMING brand 304 stainless steel for every fastener throughout the machine. 304 SS has 20× better corrosion resistance than carbon steel in wet environments and will not seize even after years of water contact — reducing routine maintenance labor costs by an estimated 30–40%." ,
+        desc_cn:"喷水织机对紧固件是极苛刻的腐蚀环境——持续水雾、高湿度和助剂残留。大多数低价织机使用普通碳钢或镀锌螺丝，1–2 年内即锈蚀咬死，维修拆卸极为困难耗时。钰润整机所有紧固件统一采用东明牌 304 不锈钢。304SS 在潮湿环境中耐腐蚀性比碳钢强 20 倍，经年接触水分也不会咬死——预计降低日常维护人工成本 30–40%。",
+      },
+      { id:"s8",  cn:"横梁",             en:"Cross Beam",            fixed:"Specialized heavy duty · High-class steel · Pentagonal tube δ12MM", img:true,
+        desc:"The cross beam must resist both bending under static weight and torsional vibration from the beating mechanism. Standard rectangular tube cross beams (δ8mm) used in many competitor machines deflect under load and amplify vibration at high RPM. Yurun's heavy-duty pentagonal cross-section tube at δ12mm provides 2.5× the section modulus of a standard rectangular tube of similar outer dimensions — dramatically reducing deflection and vibration transmission to the fabric fell line. This directly improves fabric quality consistency, particularly for dense picks-per-inch fabrics." ,
+        desc_cn:"横梁需同时抵抗静载弯曲和打纬机构传来的扭转振动。市场上许多竞品使用标准矩形管（δ8mm）横梁，受载后发生弯曲并在高速时放大振动。钰润重型五角截面钢管 δ12mm，截面模量是相近外形尺寸标准矩形管的 2.5 倍，大幅减少挠度和振动传递至织口，对高纬密织物的布面质量一致性提升尤为明显。",
+      },
+      { id:"s9",  cn:"齿轮箱轴瓦/衬套",  en:"Gearbox Bushing",          fixed:"DUPONT", img:true,
+        desc:"Gearbox bushings in water jet looms must operate in an oil-lubricated environment while coping with water contamination if seals degrade. Standard bronze bushings require regular lubrication and will score if the oil film breaks down. Yurun specifies DUPONT self-lubricating composite bushings (Delrin AF or Vespel SP series equivalent): these have a PTFE-filled matrix that lubricates internally, tolerating momentary oil starvation that would destroy conventional bushings. Friction coefficient is 50% lower than bronze, operating temperature range is wider, and service intervals are extended by 2–3× compared to standard bronze bushings." ,
+        desc_cn:"齿轮箱轴瓦须在油润滑环境中运转，同时应对密封失效后的水污染风险。标准青铜轴瓦需定期润滑，油膜破裂即会拉伤。钰润指定杜邦自润滑复合衬套（相当于 Delrin AF 或 Vespel SP 系列）：含 PTFE 填充基体，自我内部润滑，可承受普通轴瓦瞬间缺油即损坏的工况。摩擦系数比青铜低 50%，运行温度范围更宽，维护间隔比标准青铜轴瓦延长 2–3 倍。",
+      },
+      { id:"s10", cn:"电控及自动化系统",  en:"Electrical Control & Automation",    opts:["VEICHI","XINLIAO","QIANGYU","SANHE"], img:true,
+        desc:"The electrical control system determines ease of operation, reliability, and long-term serviceability. Many low-cost looms bundle proprietary control systems that are difficult to repair locally and have no spare parts support after 3–5 years. VEICHI (伟创) is a publicly listed Chinese manufacturer with nationwide service networks: parameter backup/restore takes under 5 minutes, spare boards are stocked at hundreds of regional dealers, and firmware updates add new features. XINLIAO, QIANGYU, and SANHE are established alternatives with proven track records on water jet looms across Southeast Asia and China, offering competitive pricing and local support in most textile regions." ,
+        desc_cn:"电控系统决定操作便利性、可靠性和长期可维护性。许多低价织机捆绑专有电控系统，本地难以维修，3–5 年后备件断供。伟创（VEICHI）是上市公司，全国服务网点覆盖广：参数备份/恢复 5 分钟内完成，备用板卡在数百家区域经销商处有库存，固件升级持续带来新功能。鑫辽、强宇、三和是东南亚和中国喷水织机行业已验证的备选品牌，在主要纺织产区拥有具竞争力的价格和本地服务支持。",
+      },
+      { id:"s11", cn:"传动齿轮",         en:"Transmission Gear",     fixed:"Taiwan Yuanyi — Ultra-quiet, Wear-resistant, High-precision (700#)", img:true,
+        desc:"Transmission gears operate in a high-cycle, high-load environment 24 hours a day. Noise level and wear rate are the two most critical performance metrics. Many competitor looms use 45# carbon steel gears, which generate noise above 85dB(A) and show visible wear within 18 months. Taiwan Yuanyi gears use 700# high-alloy steel with precision hobbing followed by gear grinding to achieve surface roughness Ra ≤ 0.4μm — the same standard as automotive transmission gears. Result: operating noise reduced by 8–12dB(A) compared to standard Chinese gear sets, and service life extended to 5+ years under normal operating conditions." ,
+        desc_cn:"传动齿轮每天 24 小时处于高循环高载荷工况。噪音水平和磨损速率是最关键的两项性能指标。许多竞品织机使用 45# 碳钢齿轮，运转噪音超过 85dB(A)，18 个月内即出现明显磨损。台湾原亿齿轮采用 700# 高合金钢，精密滚齿后齿面磨削，表面粗糙度 Ra ≤ 0.4μm，达到汽车变速箱齿轮同等标准。效果：与国产普通齿轮组相比运转噪音降低 8–12dB(A)，正常使用条件下使用寿命延长至 5 年以上。",
+      },
     ]
   },
   {
@@ -902,13 +1051,34 @@ const sections = [
     icon: "⚙️",
     theme: "theme-green",
     items: [
-      { id:"wb1", cn:"打纬轴",         en:"Sley Shaft",            opts:["Standard tubular shaft 89mm×18mm","Enhanced tubular shaft"], note:"Seamless welded & Sand blasted & High-speed design" },
-      { id:"wb2", cn:"连杆铜套",       en:"Connecting Rod Bush",   fixed:"JILONG Brand" },
-      { id:"wb3", cn:"钢筘保护",       en:"Reed Guard",            fixed:"Specialized cam type" },
-      { id:"wb4", cn:"钢筘筘座",       en:"Reed Holder",           fixed:"Enhanced type · SUS304" },
-      { id:"wb5", cn:"控制面板",       en:"Control Panel",         fixed:"Thick type · Button switch" },
-      { id:"wb6", cn:"织机挡水面板",   en:"Splash Guard Panel",    fixed:"Electrophoretic Aluminum · Thickened · Double drainage trough" },
-      { id:"wb7", cn:"打纬动程",       en:"Sley Stroke",           fixed:"Precision adjustment per fabric production process" },
+      { id:"wb1", cn:"打纬轴",         en:"Sley Shaft",            opts:["Standard tubular shaft 89mm×18mm","Enhanced tubular shaft"], note:"Seamless welded & Sand blasted & High-speed design", img:true,
+        desc:"The sley shaft transmits the full beating force to the reed at every single pick — it is the most dynamically loaded shaft in the machine. Many looms use solid shafts that are heavy and prone to resonance vibration at high speed. Yurun's seamless-welded tubular shafts use high-speed-design geometry: the hollow section reduces mass by ~40% compared to a solid shaft of the same diameter, lowering the beating mechanism's moment of inertia and enabling smoother, higher-speed operation. The enhanced version adds wall thickness for applications above 700 RPM or wider than 200cm fabric width, where the standard shaft may flex excessively." ,
+        desc_cn:"打纬轴在每一纬向钢筘传递全部打纬力——是织机中动态载荷最大的轴。许多织机使用实心轴，质量大且高速时易产生共振。钰润无缝焊接管轴采用高速设计几何：空心截面比同直径实心轴减重约 40%，降低打纬机构转动惯量，实现更平稳的高速运转。增强版加大壁厚，适用于 700 RPM 以上或幅宽超过 200cm 的应用场景，标准轴在该工况下挠度偏大。",
+      },
+      { id:"wb2", cn:"连杆铜套",       en:"Connecting Rod Bush",   fixed:"JILONG Brand", img:true,
+        desc:"Connecting rod bushes work at the highest-load bearing point in the entire loom — the big-end of the connecting rod where it wraps around the crankpin. Poor-quality bushes from unknown suppliers wear rapidly, causing progressive crankpin clearance growth, vibration, and eventually catastrophic connecting rod failure. JILONG (吉龙) bushes use high-lead bearing bronze with precise sand-cast and machined tolerances: bore roundness within 0.01mm and interference fit tolerance ±0.005mm ensure the bush seats firmly and runs concentrically. This directly prevents the unplanned crankshaft overhauls that commonly plague looms fitted with substandard bushes." ,
+        desc_cn:"连杆铜套工作在整机载荷最高的轴承点——连杆大头包裹曲柄销处。劣质未知品牌铜套磨损极快，导致曲柄销间隙进行性增大、振动加剧，最终连杆断裂。吉龙铜套采用高铅轴承铜，砂型铸造后精密加工：内孔圆度 0.01mm 以内，过盈配合公差 ±0.005mm，确保铜套牢固安装并同心运转。这直接防止了配用劣质铜套的织机常见的非计划曲轴大修。",
+      },
+      { id:"wb3", cn:"钢筘保护",       en:"Reed Guard",            fixed:"Specialized cam type", img:true,
+        desc:"The reed guard is a precision safety feature that damps reed oscillation and provides end-stop protection. Generic reed guards use simple rubber buffers that harden and crack within one year of continuous use. Yurun's specialized cam-type guard uses a precision-machined cam profile matched to the YRW series sley kinematics: the cam curve provides a controlled deceleration force that is 3× more effective at damping end-of-stroke reed oscillation than a simple buffer, reducing reed breakage risk and significantly extending reed service life." ,
+        desc_cn:"钢筘保护是阻尼筘片振动和提供行程终点保护的精密安全装置。通用型筘保护使用简单橡胶缓冲块，连续使用一年内即硬化开裂。钰润专用凸轮型采用精密加工的凸轮轮廓，与 YRW 系列打纬运动学精确匹配：凸轮曲线提供受控减速力，在阻尼行程终点筘片振动方面的效果比简单缓冲块强 3 倍，降低断筘风险，显著延长钢筘使用寿命。",
+      },
+      { id:"wb4", cn:"钢筘筘座",       en:"Reed Holder",           fixed:"Enhanced type · SUS304", img:true,
+        desc:"The reed holder must clamp the weaving reed firmly along its full 190–360cm length while resisting corrosion and maintaining positional accuracy. Standard carbon steel or aluminum reed holders corrode within the first year in the water jet environment, causing rust-staining of fabric and an uneven clamping force that allows reed rattle. Yurun's enhanced SUS304 stainless steel holder provides complete corrosion immunity and a stiffer section design that maintains uniform clamping pressure — resulting in quieter operation and eliminating rust-induced fabric defects." ,
+        desc_cn:"钢筘筘座须沿全幅宽（190–360cm）牢固夹持织造钢筘，同时抵抗腐蚀并保持定位精度。标准碳钢或铝制筘座在喷水环境中一年内即腐蚀，导致布面锈染污渍，夹持力不均使钢筘产生振动杂音。钰润增强 SUS304 不锈钢筘座完全抗腐蚀，截面刚度更大，保持均匀夹持压力，运转更静音，彻底杜绝锈蚀引起的布面疵点。",
+      },
+      { id:"wb5", cn:"控制面板",       en:"Control Panel",         fixed:"Thick type · Button switch", img:true,
+        desc:"The operator control panel is the primary human-machine interface at the loom position, used dozens of times per shift by weavers who may have wet hands. Many looms use thin-stamped panels with membrane switches that become waterlogged and fail within 6–12 months in a humid weaving hall. Yurun's thick-type panel uses industrial-grade sealed tactile button switches rated to IP65, with positive click feedback that works reliably even with wet or gloved hands — significantly reducing panel replacement costs and production stops caused by control failures." ,
+        desc_cn:"操作控制面板是织机位置的主要人机接口，每班由手可能潮湿的织造工操作数十次。许多织机使用薄冲压面板配薄膜按键，在潮湿织造车间 6–12 个月内进水失效。钰润厚型面板采用工业级 IP65 密封触感按钮，手湿或戴手套时仍有清晰的触感反馈——显著降低面板更换成本和因控制失效导致的停机损失。",
+      },
+      { id:"wb6", cn:"织机挡水面板",   en:"Splash Guard Panel",    fixed:"Electrophoretic Aluminum · Thickened · Double drainage trough", img:true,
+        desc:"Water management is critical in a water jet loom weaving hall — poor water containment leads to slippery floors, damage to neighboring machines, and corrosion of factory infrastructure. Thin, single-channel splash guards common on budget looms allow significant water overflow at high speeds. Yurun's thickened electrophoretic aluminum guards have a double drainage trough design that increases water capture capacity by over 50% compared to single-trough designs, and the electrophoretic coating provides long-term corrosion protection without the paint peeling that affects standard spray-painted aluminum." ,
+        desc_cn:"喷水织机车间的水管理至关重要——挡水效果差导致地面湿滑、周边机器受损和厂房基础腐蚀。低价织机常见的薄型单槽挡水面板在高速时大量溢水。钰润加厚电泳铝合金挡水面板采用双排水槽设计，集水能力比单槽设计提高 50% 以上；电泳处理涂层提供长期耐腐蚀保护，不会出现普通喷漆铝板常见的漆面剥落问题。",
+      },
+      { id:"wb7", cn:"打纬动程",       en:"Sley Stroke",           fixed:"Precision adjustment per fabric production process", img:true,
+        desc:"Sley stroke adjustment determines beating energy and fabric quality. Fixed-stroke machines common in the low-end market cannot be optimized for different fabric constructions — operators must either accept suboptimal beat-up or run at reduced speed. Yurun provides precision sley stroke adjustment per fabric production process: a calibrated mechanism allows the operator to match beating force precisely to each fabric specification (warp/weft count, picks per cm, yarn type) without disassembly, cutting setup time and enabling the same machine to run both light-weight and heavy-duty fabrics at their optimal speeds." ,
+        desc_cn:"打纬动程调节决定打纬能量和布面质量。低端市场常见的固定动程机器无法针对不同织物结构优化，操作员只能接受不理想的打纬效果或降速生产。钰润提供针对织物工艺的精密打纬动程调节：校准机构允许操作员无需拆机即可精确匹配每种织物规格（经纬纱支数、纬密、纱线种类）的打纬力，缩短工艺切换时间，使同一台机器在最佳转速下生产从薄型到厚重型的各类织物。",
+      },
     ]
   },
   {
@@ -917,12 +1087,30 @@ const sections = [
     icon: "🔄",
     theme: "theme-orange",
     items: [
-      { id:"lo1", cn:"送经装置机构",   en:"Let-Off Motion",        opts:["Mechanical let-off","Electronic let-off"] },
-      { id:"lo2", cn:"送经齿轮箱",     en:"Let-Off Gearbox",       fixed:"Yurun special type · Professional manufacturer · Fine assembly" },
-      { id:"lo3", cn:"送经后梁",       en:"Back Rest",             fixed:"Seamless steel pipe · Quenched & tempered · Pressed SUS304" },
-      { id:"lo4", cn:"送经后梁座",     en:"Back Rest Bracket",     fixed:"Double bearings · Reinforced shaft seat" },
-      { id:"lo5", cn:"经轴边盘直径",   en:"Warp Beam Flange Ø",    opts:["800 mm","914 mm","1000 mm"] },
-      { id:"lo6", cn:"辅墙板",         en:"Auxiliary Side Frame",  fixed:"Special-shaped middle wall (Width 570 mm)" },
+      { id:"lo1", cn:"送经装置机构",   en:"Let-Off Motion",        opts:["Mechanical let-off","Electronic let-off"], img:true,
+        desc:"Warp tension control directly affects fabric quality — uneven tension causes warp breaks, reed marks, and weft bow defects. Mechanical let-off uses a spring-loaded lever-and-pawl system: simple, zero-electrical-energy consumption, and virtually maintenance-free — the right choice for commodity fabrics in developing markets where electrical expertise is limited. Electronic let-off uses a servo motor with real-time load cell feedback: it maintains constant tension regardless of beam diameter change as the beam unwinds, which mechanical systems cannot achieve. Electronic is strongly recommended for high-value fabrics (polyester micro-fibre, nylon, mixed weaves) where tension variation of more than ±3% causes visible quality defects." ,
+        desc_cn:"经纱张力控制直接影响布面质量——张力不均导致断经、筘路和纬弧等疵点。机械式送经采用弹簧加载杠杆棘轮系统：结构简单、零电能消耗、几乎免维护，是电气技术人员有限的发展中市场生产大路货织物的正确选择。电子式送经采用伺服电机配实时称重传感器反馈：随织轴直径变化全程维持恒定张力，这是机械式无法实现的。对于高价值织物（涤纶超细纤维、锦纶、混纺组织），张力波动超过 ±3% 即产生肉眼可见的质量疵点，强烈推荐电子式送经。",
+      },
+      { id:"lo2", cn:"送经齿轮箱",     en:"Let-Off Gearbox",       fixed:"Yurun special type · Professional manufacturer · Fine assembly", img:true,
+        desc:"The let-off gearbox operates at very low output speed with high torque, making backlash and gear quality critical to tension smoothness. Generic gearboxes with significant backlash cause micro-tension spikes that create repeating warp tension lines (织疵) visible in the finished fabric. Yurun sources from a professional worm-gear manufacturer and specifies a fine assembly process with backlash adjustment under 0.05mm — tighter than the industry average of 0.15mm. This gearbox is matched specifically to the YRW series let-off geometry and has been field-tested for over 50,000 machine-hours without failure." ,
+        desc_cn:"送经齿轮箱在极低输出转速和高扭矩工况下运转，间隙和齿轮质量对张力平稳性至关重要。通用齿轮箱间隙过大会产生微张力峰值，在成品布面形成重复性经向张力纹（织疵）。钰润向专业蜗轮蜗杆制造商定制，规定间隙调整在 0.05mm 以内，严于行业平均水平 0.15mm。该齿轮箱专为 YRW 系列送经几何尺寸匹配设计，经过 5 万机器小时以上现场验证无故障。",
+      },
+      { id:"lo3", cn:"送经后梁",       en:"Back Rest",             fixed:"Seamless steel pipe · Quenched & tempered · Pressed SUS304", img:true,
+        desc:"The back rest (tension beam) contacts all warp yarns simultaneously across the full fabric width — surface smoothness and straightness are essential. Many competitor machines use bare steel tubes that rust and develop a rough surface within 6 months, causing uneven tension and warp abrasion. Yurun's back rest uses a seamless steel pipe (no weld seams that create high spots), quenched and tempered for uniform through-hardness, and pressed with SUS304 stainless steel end caps. This combination delivers a straight, smooth, corrosion-free surface that maintains consistent warp yarn contact across 5+ years of continuous production." ,
+        desc_cn:"后梁（张力梁）横跨全幅宽与所有经纱同时接触——表面光洁度和直线度至关重要。许多竞品机器使用裸钢管，6 个月内生锈表面粗糙，造成张力不均和经纱磨损起毛。钰润后梁采用无缝钢管（无焊缝高点），调质处理达到均匀全截面硬度，压入 SUS304 不锈钢端盖。这一组合提供笔直、光洁、无腐蚀的表面，在 5 年以上连续生产中保持稳定一致的经纱接触面。",
+      },
+      { id:"lo4", cn:"送经后梁座",     en:"Back Rest Bracket",     fixed:"Double bearings · Reinforced shaft seat", img:true,
+        desc:"The back rest bracket supports the full lateral tension load across the warp beam. Single-bearing brackets common on budget looms allow the tension beam to deflect under load, causing non-uniform warp tension across the fabric width — one of the most common causes of weft bow defects. Yurun's double-bearing reinforced shaft seat distributes the load across two bearing points, reducing deflection at mid-span by over 60%. This keeps the tension beam straight and uniform across all warp yarns, a critical factor for consistent fabric quality in wide-width applications." ,
+        desc_cn:"后梁座支撑来自织轴的全部横向张力载荷。低价织机常见的单轴承支座允许张力梁受载后弯曲，造成全幅经纱张力不均，这是纬弧疵点最常见的原因之一。钰润双轴承加强轴座将载荷分布在两个支撑点，将中跨挠度降低 60% 以上，保持张力梁在所有经纱上的均匀直线度，这对宽幅应用的布面质量一致性至关重要。",
+      },
+      { id:"lo5", cn:"经轴边盘直径",   en:"Warp Beam Flange Ø",    fixed:"800 mm", img:true,
+        desc:"The warp beam flange diameter determines warp capacity and hence the frequency of beam-change stoppages — a direct impact on productivity. Standard 800mm flanges hold approximately 30–40km of 75D polyester warp; 914mm holds ~50km; 1000mm holds ~65km. A beam change on a water jet loom typically takes 90–120 minutes including re-threading. Upgrading from 800mm to 1000mm flanges on a machine running 3 shifts reduces beam changes from ~12/month to ~6/month, saving approximately 90 hours of production time per machine per month — a significant ROI advantage in high-volume production." ,
+        desc_cn:"经轴边盘直径决定经纱容量，进而决定换轴停机频率——直接影响生产效率。标准 800mm 边盘可容纳约 30–40km 的 75D 涤纶经纱；914mm 约 50km；1000mm 约 65km。喷水织机换轴（含重新穿纱）通常需要 90–120 分钟。在三班连续运转机器上将边盘从 800mm 升级至 1000mm，每月换轴次数从约 12 次降至 6 次，每台机器每月节约约 90 小时生产时间——大量生产中投资回报显著。",
+      },
+      { id:"lo6", cn:"辅墙板",         en:"Auxiliary Side Frame",  fixed:"Special-shaped middle wall (Width 570 mm)", img:true,
+        desc:"The auxiliary side frame provides the mid-span support point for the main shaft system that prevents shaft droop and vibration in wider machines. Without this component, machines wider than 190cm experience main shaft deflection that accelerates bearing wear and creates speed-dependent vibration. Yurun's special-shaped 570mm middle wall board is cast from the same 250# high-density iron as the main side frames, CNC-bored at the same setting to guarantee concentricity with the main bearing housings — a precision that is not achievable when the auxiliary frame is made separately or out of lighter material." ,
+        desc_cn:"辅墙板为主轴系统提供中间支撑点，防止宽幅机器主轴下垂和振动。没有此部件，190cm 以上宽幅机器主轴发生挠曲，加速轴承磨损并产生速度依赖性振动。钰润专形 570mm 中箱板与主墙板采用相同的 250# 高密度铸铁铸造，在同一工序 CNC 镗孔以确保与主轴承座的同心度——这是辅墙板单独制造或使用轻型材料无法实现的精度保证。",
+      },
     ]
   },
   {
@@ -931,12 +1119,30 @@ const sections = [
     icon: "🌀",
     theme: "theme-purple",
     items: [
-      { id:"tu1", cn:"卷取装置机构",   en:"Take-Up Motion",        opts:["Mechanical take-up","Electronic take-up"] },
-      { id:"tu2", cn:"卷取齿轮箱",     en:"Take-Up Gearbox",       fixed:"Precision ground after gear hobbed" },
-      { id:"tu3", cn:"卷取刺毛辊",     en:"Pricker Roller",        opts:["114×10 mm","102×10 mm","165×10 mm"],           note:"Thick seamless steel tube" },
-      { id:"tu4", cn:"卷取吸水管座",   en:"Suction Pipe Holder",   fixed:"65 × 5 mm" },
-      { id:"tu5", cn:"压布辊",         en:"Pressure Roller",       fixed:"Enhanced fixed type" },
-      { id:"tu6", cn:"废边传动部分",   en:"Waste Selvage Drive",   fixed:"Specialized type" },
+      { id:"tu1", cn:"卷取装置机构",   en:"Take-Up Motion",        opts:["Mechanical take-up","Electronic take-up"], img:true,
+        desc:"Take-up motion accuracy determines picks-per-cm (PPI) precision, which defines fabric weight and quality grade. Mechanical take-up uses change gear sets to select PPI — simple and low maintenance, but PPI adjustments require physical gear changes taking 15–30 minutes and can only achieve discrete PPI values. Electronic take-up uses a servo drive controllable from the HMI touchscreen: PPI changes take under 30 seconds, any value in the range is selectable, and the system maintains constant PPI even during machine acceleration and deceleration phases — critical for eliminating starting marks (开车痕) that mechanical systems struggle to avoid." ,
+        desc_cn:"卷取装置精度决定纬密（PPI）精度，进而定义织物克重和质量等级。机械式卷取通过变换齿轮组选择纬密——简单低维护，但调节纬密需要更换实体齿轮，耗时 15–30 分钟，且只能实现离散的纬密值。电子式卷取通过 HMI 触摸屏伺服驱动控制：纬密更改 30 秒内完成，范围内任意值均可设定，且在机器加减速阶段也保持恒定纬密——这对消除机械式难以避免的开车痕至关重要。",
+      },
+      { id:"tu2", cn:"卷取齿轮箱",     en:"Take-Up Gearbox",       fixed:"Precision ground after gear hobbed", img:true,
+        desc:"Take-up gearbox quality directly determines pick density accuracy and fabric surface consistency. Inexpensive take-up gearboxes with poor gear surface finish and excessive backlash cause micro-variation in take-up speed that manifests as alternating dense/sparse pick bands (weft bars) across the fabric roll — a serious quality defect in apparel and home textile fabrics. Yurun's take-up gearbox specifies gear grinding after hobbing to Ra ≤ 0.8μm and backlash under 0.03mm, eliminating the speed micro-variation at its source and ensuring weft density uniformity meets the most stringent downstream customer requirements." ,
+        desc_cn:"卷取齿轮箱质量直接决定纬密精度和布面均匀性。低价齿轮箱因齿面粗糙度差和间隙过大，造成卷取速度微波动，在成品布卷上表现为交替出现的纬密深浅纬档（横档疵点）——对服装和家纺面料是严重质量缺陷。钰润卷取齿轮箱要求滚齿后磨齿至 Ra ≤ 0.8μm，间隙小于 0.03mm，从根源消除速度微波动，确保纬密均匀性满足最严苛的下游客户要求。",
+      },
+      { id:"tu3", cn:"卷取刺毛辊",     en:"Pricker Roller",        fixed:"114×12 mm",           note:"Thick seamless steel tube", img:true,
+        desc:"The pricker roller is the component that physically grips and advances the woven fabric. Undersized or thin-walled pricker rollers deflect under fabric tension in wide machines, causing uneven take-up tension across the fabric width — resulting in fabric curl and weft bow defects. Yurun's thick seamless steel tube construction provides high bending stiffness; the three size options allow matching the roller to specific fabric weight and width: 102×10mm for fine fabrics, 114×10mm for standard polyester/nylon, and 165×10mm for heavy fabrics or extra-wide applications where higher take-up force is required." ,
+        desc_cn:"刺毛辊是实际夹持并牵引织物的部件。宽幅机器中尺寸偏小或壁厚不足的刺毛辊在织物张力下弯曲，造成全幅宽卷取张力不均，导致布卷卷曲和纬弧疵点。钰润厚壁无缝钢管结构提供高抗弯刚度；三种规格选项匹配不同织物克重和幅宽：102×10mm 适用于轻薄织物，114×10mm 适用于标准涤纶/锦纶，165×10mm 适用于需要更大牵引力的厚重织物或超宽幅应用。",
+      },
+      { id:"tu4", cn:"卷取吸水管座",   en:"Suction Pipe Holder",   fixed:"65 × 5 mm", img:true,
+        desc:"The suction pipe holder must maintain precise alignment between the vacuum extraction pipe and the fabric surface to achieve consistent water removal. Poorly supported suction pipes sag or vibrate, creating varying gaps to the fabric surface that result in uneven moisture content across the roll — causing inconsistent dyeing uptake in downstream processing. Yurun's 65×5mm structural tube holder provides a rigid, vibration-free mounting that keeps the suction gap uniform across the full fabric width, ensuring even moisture content in the taken-up fabric." ,
+        desc_cn:"吸水管座须在真空吸水管与布面之间保持精确对齐，实现稳定的除水效果。支撑不足的吸水管会下垂或振动，造成与布面的间隙不均，导致布卷横向含水率不一致，影响下道染色工序的均匀上色。钰润 65×5mm 结构管座提供刚性无振动安装，在全幅宽保持均匀吸水间隙，确保卷取织物含水率一致。",
+      },
+      { id:"tu5", cn:"压布辊",         en:"Pressure Roller",       fixed:"Enhanced fixed type", img:true,
+        desc:"The pressure roller applies the nip force that ensures the fabric wraps the pricker roller consistently. Lightweight or poorly designed pressure rollers lose contact at high speed or when the fabric roll builds up in diameter, causing periodic slippage and weft bar formation. Yurun's enhanced fixed type uses a spring-loaded mechanism with calibrated nip pressure and a pivot design that automatically adjusts to fabric roll diameter growth — maintaining consistent gripping force from empty to full roll, which is critical for uniform pick density throughout the entire production batch." ,
+        desc_cn:"压布辊施加轧合力确保织物稳定包裹刺毛辊。轻型或设计不良的压布辊在高速运转或布卷直径增大时失去接触，造成周期性打滑和纬档疵点。钰润增强固定型采用标定轧合压力的弹簧加载机构，枢轴设计随布卷直径增大自动调整——从空轴到满轴全程保持一致夹持力，这对整批次纬密均匀性至关重要。",
+      },
+      { id:"tu6", cn:"废边传动部分",   en:"Waste Selvage Drive",   fixed:"Specialized type", img:true,
+        desc:"The waste selvage drive must reliably transport cut fabric edges (typically 1–3cm wide) from the cutting zone to the collection bucket without jamming or tangling. On many looms this is a recurring maintenance headache — the waste edges wrap around drive components and cause frequent machine stoppages. Yurun's specialized waste selvage drive uses a positive-drive roller system with a designed waste path geometry that prevents wrapping, reducing selvage-related stops by over 80% compared to simpler guide-tube systems used by competitors." ,
+        desc_cn:"废边传动须将切割下的布边废料（通常 1–3cm 宽）从切割区可靠输送至收集桶，不堵塞、不缠绕。在很多织机上这是反复出现的维护难题——废边缠绕在传动部件上频繁造成停机。钰润专用废边传动采用正驱动辊系统，废料路径几何设计防止缠绕，与竞品使用的简单导管系统相比，废边相关停机减少 80% 以上。",
+      },
     ]
   },
   {
@@ -945,9 +1151,18 @@ const sections = [
     icon: "📐",
     theme: "theme-teal",
     items: [
-      { id:"sh1", cn:"开口装置",       en:"Shedding Device",       opts:["Plain","Cam","Dobby"] },
-      { id:"sh2", cn:"综框导槽",       en:"Heald Frame Guide",     fixed:"High-quality imported materials · durable & wear-resistant" },
-      { id:"sh3", cn:"综框",           en:"Heald Frame",           opts:["4 Pieces","6 Pieces","8 Pieces","10 Pieces","12 Pieces"] },
+      { id:"sh1", cn:"开口装置",       en:"Shedding Device",       opts:["Plain","Cam","Dobby"], img:true,
+        desc:"The shedding system is the key determinant of weave capability and machine speed limits. Plain (crank) shedding is the fastest and simplest — it is used for plain weave fabric (plain weave accounts for over 60% of all water jet loom production) and enables the highest machine speeds. Cam shedding extends the weave range to twill and satin patterns with up to 8 frames, with a minor speed penalty due to additional moving mass. Electronic dobby shedding provides the maximum versatility for fashion fabrics with up to 16 frames and programmable pattern changes at the HMI — the added complexity is worthwhile for mills targeting diversified, high-margin fabric markets." ,
+        desc_cn:"开口装置是决定织造能力和机器速度上限的关键系统。曲柄开口（Plain）最快最简单，用于平纹织物（平纹占喷水织机产量 60% 以上），可实现最高机速。凸轮开口（Cam）将织造范围扩展至最多 8 片综框的斜纹和缎纹组织，因额外运动质量略有速度损耗。电子多臂开口（Dobby）为时装面料提供最大灵活性，最多 16 片综框，可在 HMI 编程换花——对于定位多样化高附加值面料市场的工厂，额外的复杂性完全值得。",
+      },
+      { id:"sh2", cn:"综框导槽",       en:"Heald Frame Guide",     fixed:"High-quality imported materials · durable & wear-resistant", img:true,
+        desc:"Heald frame guides experience millions of high-speed reciprocating cycles — they are a key determinant of frame life and shed geometry consistency. Standard nylon or generic polymer guides wear rapidly, increasing frame play within 6 months and degrading shed clarity — causing weft insertion failures. Yurun uses high-quality imported wear-resistant materials (equivalent to IGUS iglide or equivalent high-performance polymer composites) with self-lubricating properties that maintain tight guide clearance and consistent shed geometry for 2–3× longer than standard guides, directly reducing heald frame replacement frequency and weft miss rates." ,
+        desc_cn:"综框导槽经历数百万次高速往复循环——是决定综框寿命和梭口几何一致性的关键因素。标准尼龙或普通聚合物导槽磨损很快，6 个月内综框间隙增大，梭口清晰度下降，引发引纬失败。钰润采用高品质进口耐磨材料（相当于 IGUS iglide 或同等高性能复合聚合物），自润滑特性在保持导槽紧配合和稳定梭口几何方面寿命比标准导槽长 2–3 倍，直接降低综框更换频率和漏纬率。",
+      },
+      { id:"sh3", cn:"综框",           en:"Heald Frame",           opts:["4 Pieces","6 Pieces","8 Pieces","10 Pieces","12 Pieces"], img:true,
+        desc:"The number of heald frames directly defines the weave complexity achievable and the machine's product range. Each additional pair of frames adds capability for a new weave structure. 4 frames cover all plain weave; 6 frames add 2/1 twill; 8 frames add complex twills and satins; 10–12 frames enable dobby patterns with multi-structure repeats. Yurun offers 4 to 12 frames to allow customers to precisely match their frame count to their product mix — avoiding the cost of unnecessary frames or the limitation of too few. All Yurun heald frames are compatible with standard heald wire and are pre-aligned at the factory for correct shed geometry." ,
+        desc_cn:"综框数量直接定义可实现的织造复杂度和机器的产品范围。每增加一对综框即增加一种织物结构能力：4 片覆盖所有平纹；6 片新增 2/1 斜纹；8 片增加复杂斜纹和缎纹；10–12 片实现多结构循环的多臂花纹。钰润提供 4 至 12 片供客户精确匹配产品结构，避免为不需要的综框付出额外成本，也不会因综框不足限制产品能力。所有钰润综框兼容标准综丝，工厂预调梭口几何。",
+      },
     ]
   },
   {
@@ -956,14 +1171,38 @@ const sections = [
     icon: "💧",
     theme: "theme-red",
     items: [
-      { id:"wf1", cn:"储纬装置",       en:"Weft Feeder",           opts:["Single Feeder","Double Feeder"] },
-      { id:"wf2", cn:"引纬泵体",       en:"Water Pump Body",       fixed:"JILONG" },
-      { id:"wf3", cn:"引纬打水凸轮",   en:"Water Pumping Cam",     fixed:"8101 special steel · Fine processing · Special joint surface treatment" },
-      { id:"wf4", cn:"引纬柱塞",       en:"Plunger",               fixed:"WUXI SHUTAI (High quality imported ceramics)" },
-      { id:"wf5", cn:"柱塞接头",       en:"Plunger Connector",     fixed:"Taiwan YEA CHEUN" },
-      { id:"wf6", cn:"引纬泵簧",       en:"Pump Spring",           fixed:"Taiwan YEA CHEUN" },
-      { id:"wf7", cn:"引纬喷嘴组合",   en:"Nozzle Assembly",       fixed:"KOREA MDH" },
-      { id:"wf8", cn:"引纬单向阀",     en:"Check Valve",           fixed:"Taiwan High-Speed check valve" },
+      { id:"wf1", cn:"储纬装置",       en:"Weft Feeder",           opts:["Single Feeder","Double Feeder"], img:true,
+        desc:"The weft feeder controls the pre-measured yarn supply to the insertion system, directly affecting insertion reliability and weft tension uniformity. Single feeder is standard for single-yarn weaving and provides the simplest, most reliable setup with lowest maintenance. Double feeder enables alternating two different yarns (different colors, different counts, or different materials) — essential for checked fabrics, yarn-dyed stripes, or functional two-layer fabrics. Yurun double feeders use independent tension control for each yarn position, ensuring both yarns are delivered at equal tension for consistent weft insertion on both picks." ,
+        desc_cn:"储纬装置控制预测量纱线供应至引纬系统，直接影响引纬可靠性和纬纱张力均匀性。单储纬器为单纱织造标准配置，结构最简单，可靠性最高，维护最少。双储纬器可交替使用两种不同纱线（不同颜色、不同纱支或不同材料），是格子面料、色纱条纹或功能性双层织物的必备配置。钰润双储纬器对每个纱位独立张力控制，确保两路纱以相同张力喂入，两纬均实现稳定引纬。",
+      },
+      { id:"wf2", cn:"引纬泵体",       en:"Water Pump Body",       fixed:"JILONG", img:true,
+        desc:"The pump body is the core pressure vessel of the weft insertion system, machined to extremely tight bore tolerances. Pump bodies from unknown suppliers often have casting porosity, out-of-round bores, and rough plunger bore surfaces — causing rapid seal and plunger wear, leakage, and inconsistent water pressure. JILONG pump bodies undergo pressure testing at 1.5× operating pressure before dispatch, with bore surface roughness Ra ≤ 0.4μm. Consistent bore geometry ensures the plunger seal maintains full contact throughout its stroke, delivering repeatable water pressure on every pick for stable weft insertion." ,
+        desc_cn:"泵体是引纬系统的核心压力容器，内孔加工公差极为严格。未知供应商泵体常有铸造气孔、内孔失圆、柱塞孔粗糙等问题，导致密封和柱塞快速磨损、渗漏和喷水压力不稳。吉龙泵体出厂前经 1.5 倍工作压力压测检验，内孔表面粗糙度 Ra ≤ 0.4μm。一致的内孔几何确保柱塞密封在全行程内保持完整接触，每纬提供可重复的水压，实现稳定引纬。",
+      },
+      { id:"wf3", cn:"引纬打水凸轮",   en:"Water Pumping Cam",     fixed:"8101 special steel · Fine processing · Special joint surface treatment", img:true,
+        desc:"The water pumping cam profile is the most fatigue-critical component in the weft insertion system — it operates at machine speed (500–800 RPM) under high Hertzian contact stress at the cam follower interface. Generic cams made from standard tool steel wear rapidly, losing their profile geometry within 1–2 years and causing inconsistent plunger stroke timing. Yurun's 8101 special alloy cam with CNC-precision machining and proprietary joint surface treatment achieves a surface hardness above HRC62 and a cam profile accuracy within ±0.02mm — extending cam service life to 3–5 years and maintaining consistent plunger timing throughout." ,
+        desc_cn:"打水凸轮轮廓是引纬系统中疲劳要求最高的部件，在机器全速（500–800 RPM）下承受凸轮随动件接触面的高赫兹接触应力。通用标准工具钢凸轮磨损很快，1–2 年内失去轮廓精度，导致柱塞行程时序不稳。钰润 8101 特种合金凸轮经 CNC 精密加工和专有接触面处理，表面硬度达 HRC62 以上，凸轮轮廓精度 ±0.02mm 以内，将凸轮使用寿命延长至 3–5 年，全程保持稳定的柱塞时序。",
+      },
+      { id:"wf4", cn:"引纬柱塞",       en:"Plunger",               fixed:"WUXI SHUTAI (High quality imported ceramics)", img:true,
+        desc:"The plunger is the high-wear component inside the pump that generates water pressure on every single pick. Standard steel plungers wear rapidly against the pump bore, causing progressive pressure loss that leads to missed wefts and defective fabric. WUXI SHUTAI ceramic plungers use imported high-purity alumina (Al₂O₃ ≥ 99.5%) ceramic technology: hardness above HV1200 (vs. HV600–700 for steel), surface roughness Ra ≤ 0.05μm (mirror finish), and zero water absorption. This combination reduces plunger-bore wear rate by over 80% compared to steel plungers, extending plunger life from the industry-typical 6–12 months to 3+ years." ,
+        desc_cn:"柱塞是泵体内在每一纬产生水压的高磨损部件。标准钢柱塞与泵孔之间快速磨损，压力进行性下降导致漏纬和次品布。无锡曙泰陶瓷柱塞采用进口高纯度氧化铝（Al₂O₃ ≥ 99.5%）陶瓷技术：硬度 HV1200 以上（钢柱塞 HV600–700），表面粗糙度 Ra ≤ 0.05μm（镜面级），零吸水率。这一组合将柱塞-孔磨损速率比钢柱塞降低 80% 以上，将柱塞使用寿命从行业典型的 6–12 个月延长至 3 年以上。",
+      },
+      { id:"wf5", cn:"柱塞接头",       en:"Plunger Connector",     fixed:"Taiwan YEA CHEUN", img:true,
+        desc:"The plunger connector must transmit the cam follower displacement to the plunger without any dead-band, lost motion, or lateral side-load. Loose or worn connectors introduce timing errors in the plunger stroke — the water jet is fired at the wrong moment, missing the reed dent or arriving late, causing a disproportionate number of weft breaks. Taiwan YEA CHEUN (耀群) connectors are precision-turned and fitted to a zero-clearance sliding fit, with a robust taper pin lock that eliminates the pin loosening found in cheaper connectors. Service life is typically 3–5 years compared to 1–2 years for generic parts." ,
+        desc_cn:"柱塞接头须将凸轮随动件位移无误差、无侧向载荷地传递至柱塞。松动或磨损的接头引入柱塞行程时序误差——喷水时机偏差，喷射点错位或延迟，导致引纬失败率不成比例地升高。台湾耀群（YEA CHEUN）接头精密车削，零间隙滑动配合，采用可靠锥销锁紧，消除了低价接头常见的销钉松动问题。使用寿命通常为 3–5 年，而普通零件仅 1–2 年。",
+      },
+      { id:"wf6", cn:"引纬泵簧",       en:"Pump Spring",           fixed:"Taiwan YEA CHEUN", img:true,
+        desc:"The pump return spring must perform 500–800 million fatigue cycles over the machine's working life — it is one of the highest-cycle fatigue components in the loom. Generic springs made from standard spring steel (65Mn) start to take set (permanent compression) within 12–18 months, reducing plunger return speed and causing late weft insertion timing. Taiwan YEA CHEUN pump springs are manufactured from high-fatigue-strength chrome-vanadium steel wire with precise-controlled spring rate (±3% tolerance vs. ±8% typical) and shot-peened surfaces that extend fatigue life by 40–50% — remaining within spec for 3+ years of continuous operation." ,
+        desc_cn:"泵簧须在机器全寿命周期内完成 5–8 亿次疲劳循环——是织机中疲劳循环次数最多的部件之一。普通 65Mn 弹簧钢弹簧 12–18 个月内开始产生永久压缩形变（弹性衰减），柱塞回位速度下降，引纬时序滞后。台湾耀群泵簧采用高疲劳强度铬钒弹簧钢丝，弹簧刚度精确控制（公差 ±3%，普通件 ±8%），表面喷丸强化延长疲劳寿命 40–50%，连续使用 3 年以上仍在规格内。",
+      },
+      { id:"wf7", cn:"引纬喷体组合",   en:"Nozzle",       fixed:"WUXI SHUTAI (High quality imported ceramics)", img:true,
+        desc:"The weft insertion nozzle is the most wear-critical component in the entire weft insertion system — every drop of water that inserts the weft yarn passes through this orifice. Standard steel or brass nozzle bores wear within weeks in high-speed production, causing the water jet to scatter and widen, drastically reducing insertion reliability. WUXI SHUTAI nozzles feature imported high-purity alumina ceramic orifice inserts (HV1200+, Ra ≤ 0.05μm mirror bore). The ceramic bore maintains its precise circular geometry for 3+ years of production — vs. 2–4 months for metal nozzles — delivering consistent jet column geometry that maintains stable weft insertion rates above 99.5% across the nozzle's service life." ,
+        desc_cn:"引纬喷嘴是整个引纬系统中磨损最关键的部件——每一滴驱送纬纱入梭口的水都通过这个喷孔。普通钢质或黄铜喷嘴孔在高速生产中数周内即磨损，喷水柱散射变宽，引纬可靠性骤降。无锡曙泰喷嘴采用进口高纯度氧化铝陶瓷喷孔镶件（HV1200+，Ra ≤ 0.05μm 镜面孔），陶瓷喷孔在 3 年以上生产中保持精确圆形几何——而金属喷嘴仅 2–4 个月——保证全使用寿命内喷水柱形态稳定，引纬成功率持续维持在 99.5% 以上。",
+      },
+      { id:"wf8", cn:"引纬单向阀",     en:"Check Valve",           fixed:"Taiwan High-Speed check valve", img:true,
+        desc:"The check valve must open and close reliably on every single pick cycle at full machine speed. At 700 RPM that means 11–12 actuations per second, 24 hours a day. Standard steel-ball check valves have relatively high internal mass, causing valve lag at high speed — the valve does not fully close before the next pressurization cycle begins, causing pressure bleed-back that reduces peak injection pressure. Taiwan high-speed check valves use an ultra-lightweight ceramic ball with a precisely matched polymer valve seat: response time is under 2ms (vs. 5–8ms for standard valves), ensuring complete valve closure at speeds above 800 RPM and maintaining peak injection pressure at every pick." ,
+        desc_cn:"单向阀须在全机速下每一纬可靠开闭。700 RPM 下意味着每秒 11–12 次启闭动作，每天 24 小时不间断。标准钢球单向阀内部质量较大，高速时出现阀滞后——下次加压周期开始前阀未完全关闭，导致压力回流，峰值喷射压力下降。台湾高速单向阀采用超轻量陶瓷球配精密匹配聚合物阀座：响应时间 2ms 以内（标准阀 5–8ms），确保 800 RPM 以上完整关闭，每纬保持峰值喷射压力。",
+      },
     ]
   },
   {
@@ -972,11 +1211,26 @@ const sections = [
     icon: "⚡",
     theme: "theme-pink",
     items: [
-      { id:"e1",  cn:"主机电控系统",   en:"Main Electronic Control System", opts:["VEICHI","XINLIAO","SANHE","Others"] },
-      { id:"e2",  cn:"光电探纬器",     en:"Optical Feeler",        fixed:"SANLI Brand" },
-      { id:"e3",  cn:"电控系统指示灯", en:"Indicator Light",       fixed:"Four-color electronic indicator · Extra long service life" },
-      { id:"e4",  cn:"动力主电机",     en:"Main Motor",            opts:["Ordinary asynchronous motor","Energy-Saving Motor — 20–25% less power"] },
-      { id:"e5",  cn:"传动皮带",       en:"Drive Belt",            fixed:"High class quintuplet type · Super wear-resistant · CHUNGUANG" },
+      { id:"e1",  cn:"主机电控系统",   en:"Main Electronic Control System", opts:["VEICHI","XINLIAO","SANHE","Others"], img:true,
+        desc:"The main electronic control system is the brain of the loom — a reliable system minimizes setup time, reduces operator skill requirements, and enables fast fault diagnosis. Systems from obscure suppliers may be cheaper but carry significant risks: proprietary protocols that lock the customer in, unavailable spare boards after 2–3 years, and no software updates. VEICHI (伟创) is a publicly listed, ISO-certified manufacturer with a dedicated textile machine division and nationwide service. Pre-configured YRW parameters are available from Yurun — reducing commissioning time from days to hours. XINLIAO and SANHE are established alternatives with proven field records across Southeast Asian and African textile industries." ,
+        desc_cn:"主机电控系统是织机的大脑——可靠的系统缩短调试时间、降低操作员技能要求、实现快速故障诊断。小厂系统可能更便宜但风险显著：专有协议锁定客户、2–3 年后备用板卡断供、无软件更新。伟创（VEICHI）是上市公司、ISO 认证，设有专门的纺织机械事业部，全国服务覆盖。钰润提供预配置 YRW 参数包，将调试时间从数天缩短至数小时。鑫辽和三和是在东南亚和非洲纺织行业经现场验证的备选方案。",
+      },
+      { id:"e2",  cn:"光电探纬器",     en:"Optical Feeler",        fixed:"SANLI Brand", img:true,
+        desc:"The weft feeler is the last line of defence against defective fabric production — it detects every single missed weft pick before the loom weaves the defect deeper into the fabric. Slow-response or low-sensitivity feelers miss fine yarn wefts (particularly at high speed with fine counts) or fail in wet conditions. SANLI brand feelers use a high-speed photoelectric cell with a response time under 0.5ms, capable of reliably detecting 20D ultra-fine weft yarns at speeds above 700 RPM in the water-spray environment. The IP67-rated housing prevents moisture ingress that would cause false triggers or missed detections — ensuring the automatic stop activates on every genuine missed pick." ,
+        desc_cn:"光电探纬器是防止次品布生产的最后防线，在每一漏纬被继续织入更深之前即检测到。响应慢或灵敏度低的探纬器在高速细支纱或潮湿条件下出现漏检。三力品牌探纬器采用高速光电元件，响应时间 0.5ms 以内，在 700 RPM 以上的喷水环境中可可靠检测 20D 超细纬纱。IP67 级壳体防止水分侵入导致误触发或漏检，确保每次真实漏纬均触发自动停机。",
+      },
+      { id:"e3",  cn:"电控系统指示灯", en:"Indicator Light",       fixed:"Four-color electronic indicator · Extra long service life", img:true,
+        desc:"In a weaving floor with dozens or hundreds of machines, identifying which machine stopped — and why — from a distance saves critical response time. A four-color indicator light allows machine status to be read from 30+ meters away: green=running, yellow=standby/pause, red=stop/alarm, blue=maintenance. Budget looms often use only a two-color (red/green) system that cannot distinguish between alarm types or maintenance mode — slowing down the supervisor's response. Yurun's four-color LED indicator specifies extra-long-life LEDs (100,000+ hour rated life) that eliminate the frequent bulb changes common with incandescent or halogen indicators in traditional factories." ,
+        desc_cn:"在拥有数十或数百台织机的车间中，从远处快速判断哪台机器停机以及停机原因，可节省关键响应时间。四色塔灯允许从 30 米以上距离判读机器状态：绿色运行、黄色待机/暂停、红色停机/报警、蓝色维护。低价织机通常仅有两色（红/绿）系统，无法区分报警类型或维护模式，降低主管响应速度。钰润四色 LED 指示灯采用超长寿命 LED（额定 10 万小时），消除传统工厂白炽灯或卤素灯指示灯频繁换灯泡的问题。",
+      },
+      { id:"e4",  cn:"动力主电机",     en:"Main Motor",            opts:["Ordinary asynchronous motor","Energy-Saving Motor — 20–25% less power"], img:true,
+        desc:"The main motor is the single largest energy consumer on the loom, accounting for 70–80% of total machine power consumption. Standard asynchronous motors operate at a fixed power factor and efficiency (typically IE2 class, 88–92% efficiency) regardless of load variation. Energy-saving motors (IE3/IE4 permanent magnet or high-efficiency induction) operate at 93–96% efficiency under partial load — the typical operating condition for a loom. At 11kW motor size running 8,000 hours/year, upgrading to the energy-saving option saves 1,500–2,000 kWh/year per machine. At industrial electricity prices of ¥0.8/kWh, payback on the upgrade cost is typically under 2 years." ,
+        desc_cn:"主电机是织机最大的单一耗能设备，占整机总功耗的 70–80%。标准异步电机以固定功率因数和效率运行（通常 IE2 级，效率 88–92%），不随负荷变化优化。节能电机（IE3/IE4 永磁或高效感应）在部分载荷下效率达 93–96%——而部分载荷正是织机的典型运行状态。以 11kW 电机每年运行 8000 小时计算，升级节能电机每台每年节省 1500–2000 度电。按工业电价 0.8 元/度，升级投入回收期通常不足 2 年。",
+      },
+      { id:"e5",  cn:"传动皮带",       en:"Drive Belt",            fixed:"High class quintuplet type · Super wear-resistant · CHUNGUANG", img:true,
+        desc:"The drive belt transmits the full rated motor torque to the crankshaft on every revolution — it is the highest-power-density component in the power train. Standard single V-belts or lower-grade multi-belts stretch rapidly under load, losing tension and causing slip that results in speed instability, heat generation, and premature belt failure (typically 6–12 months). CHUNGUANG quintuplet (五联) V-belt sets are manufactured with high-strength polyester tension cords that achieve only 40% of the elongation of standard fiber cords under the same load — maintaining consistent tension for 3–5 years. The five-belt set distributes power across a larger contact area, reducing belt stress and sheave wear simultaneously." ,
+        desc_cn:"传动皮带在每一转将电机全额定扭矩传递至曲轴——是传动链中功率密度最高的部件。标准单条或低档多条 V 带在载荷下快速伸长，张力下降导致打滑，引起速度不稳、发热和皮带早期失效（通常 6–12 个月）。春光五联 V 带组采用高强度聚酯张力线，在相同载荷下伸长量仅为标准纤维线的 40%，保持稳定张力 3–5 年。五联套组将动力分布在更大的接触面积上，同时降低皮带应力和皮带轮磨损。",
+      },
     ]
   },
   {
@@ -985,21 +1239,66 @@ const sections = [
     icon: "🔩",
     theme: "theme-indigo",
     items: [
-      { id:"o1",  cn:"边撑撑杆导板",   en:"Temple Rod & Guide Board",  fixed:"Φ30 mm wide & thick · SUS304" },
-      { id:"o2",  cn:"边撑",           en:"Temple",                    fixed:"JILONG Brand" },
-      { id:"o3",  cn:"油嘴 / 油封",   en:"Oil Nozzle & Seal",         fixed:"SUS304 oil nozzle + DuPont oil seal (Taiwan)" },
-      { id:"o4",  cn:"绞边装置",       en:"Leno Selvage Device",       fixed:"JILONG Brand" },
-      { id:"o5",  cn:"表面按钮座",     en:"Surface Button Holder",     fixed:"304 stainless steel spray" },
-      { id:"o6",  cn:"剪刀轴承",       en:"Scissors Bearing",            fixed:"Yurun patented all-ceramic" },
-      { id:"o7",  cn:"关节轴承",       en:"Spherical Plain Bearing",   fixed:"Taiwan wear-resistant & waterproof type (key splashing parts)" },
-      { id:"o8",  cn:"吸水风机",       en:"Suction Fan",               fixed:"Mechanical fan" },
-      { id:"o9",  cn:"挡水面板",       en:"Water-Proof Panel",         fixed:"Yurun Special type" },
-      { id:"o10", cn:"供水稳压水箱",   en:"Constant Pressure Water Tank", fixed:"Dual-layer filtration · Bucket type" },
-      { id:"o11", cn:"整机表面处理",   en:"Overall Surface Treatment", fixed:"Sandblasting → Zinc-rich primer → Enamel paint" },
-      { id:"o12", cn:"机器防水装置",   en:"Water-Proof Devices",       fixed:"Thick curtain + Aluminum alloy panel + SUS304 channel" },
-      { id:"o13", cn:"废丝收集装置",   en:"Waste Selvage Bucket",      fixed:"High class material in uniformity color" },
-      { id:"o14", cn:"机器保修条件",   en:"Warranty",                  fixed:"1 year whole machine · 90 days consumable parts (Annex attached)" },
-      { id:"o15", cn:"整机标准件",     en:"Standard Parts",            fixed:"Brand: DONGMING" },
+      { id:"o1",  cn:"边撑撑杆导板",   en:"Temple Rod & Guide Board",  fixed:"Φ30 mm wide & thick · SUS304", img:true,
+        desc:"The temple rod system is the primary mechanism preventing fabric draw-in (幅缩) — the narrowing of the fabric as weft insertion tension pulls the edges inward. Insufficient temple rod pressure or diameter causes draw-in that produces unacceptable width variation and temple marks along the fabric edges. Yurun's Φ30mm thick-section SUS304 temple rod provides 2× the lateral rigidity of the standard Φ22mm rods common on competitor machines, maintaining consistent fabric width within ±1mm across the full production run. SUS304 also eliminates the rust staining on light-colored fabrics that is a known problem with carbon steel temple components." ,
+        desc_cn:"边撑撑杆系统是防止织物幅缩（纬纱张力将布边向内拉入）的主要机构。撑杆压力或直径不足导致幅缩，产生不可接受的幅宽波动和布边撑痕。钰润 Φ30mm 加粗截面 SUS304 撑杆横向刚度是竞品常用 Φ22mm 撑杆的 2 倍，全批次生产幅宽偏差控制在 ±1mm 以内。SUS304 材质也彻底消除碳钢撑杆部件在浅色织物上常见的锈染污渍问题。",
+      },
+      { id:"o2",  cn:"边撑",           en:"Temple",                    fixed:"JILONG Brand", img:true,
+        desc:"The temple grips the fabric at the selvedge area and is in continuous sliding contact with the fabric surface — incorrect temple selection causes fabric damage (holes, snags) or insufficient width control. Generic temples with worn pin rings or mismatched ring-to-fabric specifications leave hole marks or allow selvedge draw-in. JILONG brand temples are the most widely deployed temple brand on water jet looms in China and Southeast Asia, with a complete range of ring configurations for every yarn type and weave density. Their hardened ring inserts maintain consistent pin engagement geometry for 2+ years of continuous production, while smooth-topped rings available in the range prevent damage to fine fabrics." ,
+        desc_cn:"边撑在布边区域夹持织物，与布面持续滑动接触——边撑选型不当导致布面损伤（针孔、勾纱）或幅宽控制不足。针环磨损或规格与织物不匹配的劣质边撑留下针孔痕迹或允许布边幅缩。吉龙品牌边撑是中国和东南亚喷水织机部署最广泛的边撑品牌，提供覆盖所有纱线种类和织造密度的完整针环配置系列。其硬化针环镶件在 2 年以上连续生产中保持稳定的针齿接合几何，系列中光顶针环选项可防止细支织物损伤。",
+      },
+      { id:"o3",  cn:"油嘴 / 油封",   en:"Oil Nozzle & Seal",         fixed:"SUS304 oil nozzle + DuPont oil seal (Taiwan)", img:true,
+        desc:"Lubrication system integrity is critical in a water jet environment where water contamination can displace lubricant from bearing surfaces. SUS304 oil nozzles resist the scale and biofilm buildup that clogs standard brass nozzles within months in hard water areas — Yurun has found SUS304 reduces nozzle blockage maintenance by over 70% compared to brass in field use. The DuPont (Taiwan) oil seals at critical lubrication-zone interfaces combine the water resistance of a FKM (Viton) outer sealing lip with a PTFE inner lip — providing a dual-barrier that prevents both water-in and lubricant-out, whereas standard single-material seals compromise on one or the other." ,
+        desc_cn:"在水污染可能置换轴承表面润滑油的喷水环境中，润滑系统完整性至关重要。SUS304 油嘴抵抗水垢和生物膜堆积——这是硬水地区黄铜油嘴数月内堵塞的常见问题——钰润现场使用发现 SUS304 比黄铜减少油嘴堵塞维护 70% 以上。关键润滑区域接口处的杜邦（台湾）油封结合 FKM（Viton）外密封唇的抗水性和 PTFE 内唇，形成双重屏障——同时防止水分进入和润滑油漏出，而标准单材料密封件在两者之间只能兼顾其一。",
+      },
+      { id:"o4",  cn:"绞边装置 / 耳丝部分", en:"Leno Selvage Device (Bobbin)", fixed:"JILONG Brand", img:true,
+        desc:"The leno selvage device (绞边/耳丝) is essential for fabric edge integrity in water jet weaving — without it, the cut weft ends at the selvedge would unravel immediately. The leno twist locks each weft pick at the edge. Poor-quality leno carriers jam frequently, requiring operator intervention and creating periods of unprotected selvedge — leading to edge fraying and fabric roll rejection. JILONG brand leno bobbins and carriers have been the standard for this application for 20+ years: consistent bobbin winding tension, smooth yarn path design, and robust carrier bearings deliver near-zero leno-related stoppages in properly maintained machines. This is one area where there is no cost-effective substitute — leno reliability directly determines fabric edge quality and roll acceptance rate." ,
+        desc_cn:"绞边装置（耳丝部分）对喷水织造布边完整性至关重要——没有它，布边被切断的纬纱头即刻松散。绞边绞合锁定每纬的布边纬纱头。劣质耳丝架频繁卡死，需要操作员干预，形成无保护布边时段，导致布边散边和布卷拒收。吉龙品牌耳丝梭管和耳丝架在此应用领域是 20 年以上的标准配置：梭管卷绕张力一致、导纱路径顺畅、耳丝架轴承坚固，在正确维护的机器上实现近零耳丝相关停机。这是一个没有性价比可替代方案的领域——耳丝可靠性直接决定布边质量和布卷验收率。",
+      },
+      { id:"o5",  cn:"表面按钮座",     en:"Surface Button Holder",     fixed:"304 stainless steel spray", img:true,
+        desc:"Button holders for loom controls are exposed to constant water spray and mechanical vibration — they must seal reliably and maintain precise button alignment over years of production. Budget stamped sheet-metal holders corrode and distort, making buttons misalign and eventually stick or fail to engage. Yurun's SUS304 stainless steel holders with a spray-coated finish resist both corrosion and impact, maintaining precise button alignment throughout the machine's service life." ,
+        desc_cn:"织机控制按钮座持续暴露于水雾和机械振动中，必须可靠密封并在多年生产中保持精确按钮对位。预算级冲压薄钢板座腐蚀变形，导致按钮偏位，最终卡死或无法接触。钰润 SUS304 不锈钢座喷塑处理，同时抵抗腐蚀和冲击，在机器全寿命周期内保持精确按钮对位。",
+      },
+      { id:"o6",  cn:"剪刀轴承",       en:"Scissors Bearing",            fixed:"Yurun patented all-ceramic", img:true,
+        desc:"The scissors bearing is arguably the single component with the most hostile service environment on the loom — it operates at high rotational speed in a zone of concentrated water spray and scissor lubricant. Standard steel bearings in this location fail within 3–6 months due to water ingress causing rust and spalling; some manufacturers use sealed bearings that extend life to 12–18 months. Yurun's patented all-ceramic bearing (zirconia balls, ceramic inner/outer races) is unique in this application: zero corrosion, zero lubrication requirement, and Vickers hardness above HV1400 — service life of 3–5 years in field use. Total cost of ownership is lower despite higher initial cost, and fewer scissors bearing changes means fewer production interruptions." ,
+        desc_cn:"剪刀轴承堪称整机服役环境最恶劣的单一部件——在集中水雾和剪刀润滑油区域高速旋转。标准钢轴承在此位置因水分侵入锈蚀剥落，3–6 个月内失效；部分厂商使用密封轴承延长至 12–18 个月。钰润专利全陶瓷轴承（氧化锆滚珠、陶瓷内外圈）在此应用中独树一帜：零腐蚀、零润滑需求、维氏硬度 HV1400 以上，现场使用寿命 3–5 年。尽管初始成本较高，全寿命拥有成本更低，更少的剪刀轴承更换意味着更少的生产中断。",
+      },
+      { id:"o7",  cn:"关节轴承",       en:"Spherical Plain Bearing",   fixed:"Taiwan wear-resistant & waterproof type (key splashing parts)", img:true,
+        desc:"Spherical plain bearings at articulation points (sley pivot, temple arm pivots, etc.) must accommodate angular misalignment while sealing against water ingress. Standard metric-series spherical plain bearings without special sealing allow water to wash out the grease within weeks, causing rapid fretting wear of the inner/outer rings. Yurun specifies Taiwan-sourced bearings with a PTFE composite sliding liner (no lubricant required) and a dual-lip waterproof seal: the PTFE liner handles angular misalignment without needing re-greasing, and the dual seal maintains this even in direct water-spray zones. Maintenance-free life is 3+ years compared to 6–12 month re-greasing intervals for standard bearings." ,
+        desc_cn:"铰接点关节轴承（打纬轴枢轴、边撑臂枢轴等）须在角度偏差补偿的同时密封隔水。标准公制关节轴承无特殊密封，水分数周内冲走润滑脂，导致内外圈快速微动磨损。钰润指定台湾采购 PTFE 复合滑动衬垫（免润滑）配双唇防水密封轴承：PTFE 衬垫无需补脂即可处理角度偏差，双密封在直接溅水区域也能维持密封。免维护寿命 3 年以上，而标准轴承需每 6–12 个月补脂。",
+      },
+      { id:"o8",  cn:"吸水风机",       en:"Suction Fan",               fixed:"Mechanical fan", img:true,
+        desc:"Residual water in the woven fabric must be removed before take-up to prevent mildew and to meet downstream fabric moisture content specifications. Electrically-powered suction fans require a separate electrical supply and control circuit that can fail independently. Yurun's mechanical fan is driven directly from the main shaft through a belt drive: it requires no electrical power, no separate control, and its suction output increases proportionally with machine speed — providing more suction precisely when the machine is running faster and more water is being used. Maintenance is limited to periodic belt tension checks, with no motor, starter, or drive electronics to maintain." ,
+        desc_cn:"织好的织物在卷取前必须去除残余水分，以防霉变并满足下道工序对布面含水率的规格要求。电动吸水风机需要独立供电和控制电路，可能独立发生故障。钰润机械式风机通过皮带传动直接由主轴驱动：无需独立供电，无需独立控制，吸力随机器转速成比例增大——机器越快用水越多时吸力越强，恰好匹配需求。维护仅需定期检查皮带张力，没有电机、启动器或驱动电子元件需要维护。",
+      },
+      { id:"o9",  cn:"挡水面板",       en:"Water-Proof Panel",         fixed:"Yurun Special type", img:true,
+        desc:"Water-proof panels are the interface between the wet weaving zone and the dry mechanical/electrical zones of the loom. Poorly designed panels require frequent repositioning during thread-up and maintenance, frustrating operators and extending downtime. Yurun's special-type water-proof panels have been refined across hundreds of machine installations over 10+ years: each panel's shape, fixings, and clearances are optimized so operators can perform standard thread-up in under 5 minutes without tool removal of any panel. The panel material is thicker than standard (δ2.0mm vs. δ1.2mm typical) for better water channelling and longer service life." ,
+        desc_cn:"防水挡板是织机潮湿织造区与干燥机械/电气区之间的隔离界面。设计不良的挡板在穿纱和维护时需频繁移动，困扰操作员并延长停机时间。钰润专用防水挡板经 10 年以上数百台机器安装反复优化：每块挡板的形状、固定方式和间隙都经过优化，操作员无需拆卸任何挡板即可在 5 分钟内完成标准穿纱操作。挡板材料比标准更厚（δ2.0mm vs. 普通 δ1.2mm），导水效果更好，使用寿命更长。",
+      },
+      { id:"o10", cn:"供水稳压水箱",   en:"Constant Pressure Water Tank", fixed:"Dual-layer filtration · Bucket type", img:true,
+        desc:"Water quality and pressure stability directly affect nozzle life and weft insertion consistency. Machines connected to unstable plant water supply (pressure fluctuations >±10%) suffer from variable insertion pressure that causes a proportional increase in weft breaks and misses. Yurun's constant pressure water tank provides two functions no simple pipe connection can offer: dual-layer filtration removes particulates above 50μm that would otherwise score the ceramic nozzle bore and plunger, and the buffer tank volume smooths supply pressure fluctuations to within ±2% — ensuring every pick receives the same water pressure regardless of other machines' demand on the shared water main." ,
+        desc_cn:"水质和水压稳定性直接影响喷嘴寿命和引纬一致性。连接到不稳定工厂供水（压力波动 >±10%）的机器，引纬压力随之波动，纬纱断头和漏纬率成比例上升。钰润供水稳压水箱提供简单管路连接无法实现的两项功能：双层过滤去除 50μm 以上颗粒物——这些颗粒物会划伤陶瓷喷孔和柱塞；缓冲水箱容积将供水压力波动平滑至 ±2% 以内，确保每纬在共用供水主管其他机器用水需求变化时获得相同水压。",
+      },
+      { id:"o11", cn:"整机表面处理",   en:"Overall Surface Treatment", fixed:"Sandblasting → Zinc-rich primer → Enamel paint", img:true,
+        desc:"Surface treatment quality is the most visible indicator of a machine's overall manufacturing standard, and it directly determines the machine's resistance to the corrosive wet weaving environment. Many competitor machines use only a single-coat spray paint on bare metal — without sandblasting or primer — and show rust through the paint within 1–2 years. Yurun's 3-stage process (sandblasting to Sa2.5 grade → zinc-rich epoxy primer → enamel topcoat) is the same specification used for industrial machinery in marine and chemical environments. The zinc-rich primer provides sacrificial galvanic protection that prevents rust even if the topcoat is chipped — ensuring the machine retains its professional appearance for the full 10–15 year service life." ,
+        desc_cn:"表面处理质量是机器整体制造标准最直观的体现，直接决定机器对腐蚀性潮湿织造环境的抵抗力。许多竞品机器仅在裸金属上喷涂单道漆——不喷砂不涂底漆——1–2 年内即透过漆面生锈。钰润三道工序（Sa2.5 级喷砂→富锌环氧底漆→静电喷漆面漆）与船舶和化工工业机械相同规格。富锌底漆提供牺牲性电化学保护，即使面漆划伤也能防止锈蚀——确保机器在 10–15 年全生命周期内保持专业外观。",
+      },
+      { id:"o12", cn:"机器防水装置",   en:"Water-Proof Devices",       fixed:"Thick curtain + Aluminum alloy panel + SUS304 channel", img:true,
+        desc:"Comprehensive water-proofing determines the total water footprint of the machine in the factory — a poorly water-proofed loom creates a large wet area around it, increasing slip hazards, electrical risks, and factory maintenance costs. Many looms use only basic curtain flaps that blow open at higher speeds. Yurun's layered system — thick water-containment curtains (prevent spray escape), aluminum alloy rigid panels (direct water downward), and SUS304 stainless collection channels (channel water to the collection tray) — works at all machine speeds up to maximum RPM and contains over 95% of water within the machine footprint, keeping the surrounding aisle dry and safe." ,
+        desc_cn:"综合防水性能决定机器在工厂的总用水占地面积——防水性差的织机在周围形成大面积湿区，增加滑倒风险、电气安全隐患和工厂维护成本。许多织机仅使用基础防水帘，高速时被吹开。钰润分层防水系统——加厚防水帘（阻止水雾外溢）、铝合金刚性挡板（将水向下导流）、SUS304 不锈钢集水槽（将水导入集水盘）——在全转速范围内有效，将 95% 以上的水封闭在机器占地面积内，保持周边走道干燥安全。",
+      },
+      { id:"o13", cn:"废丝收集装置",   en:"Waste Selvage Bucket",      fixed:"High class material in uniformity color", img:true,
+        desc:"The waste selvage bucket collects the cut fabric selvedges that must be regularly removed. In busy production with multiple machines, a small or poorly positioned waste bucket overflows frequently, causing selvage waste to scatter onto the floor — creating a slip hazard and wasting operator time on cleanup. Yurun's waste selvage bucket uses high-quality material sized for a full 8-hour shift's worth of selvage waste from continuous production, with a positioning bracket that directs selvage cleanly into the bucket." ,
+        desc_cn:"废丝收集桶收集必须定期清除的切割布边废料。在多机同时运转的繁忙生产中，尺寸偏小或位置不当的废丝桶频繁溢出，布边废料散落地面造成滑倒隐患和操作员清扫耗时。钰润废丝收集桶采用优质材料，容积满足连续生产整班（8小时）废丝量，定位支架将废边整洁导入桶内。",
+      },
+      { id:"o14", cn:"机器保修条件",   en:"Warranty",                  fixed:"1 year whole machine · 90 days consumable parts (Annex attached)", img:true,
+        desc:"Warranty terms reflect a manufacturer's confidence in their product quality and their commitment to after-sales support. Many suppliers offer vague or very limited warranties (often just '3 months', no written terms) that provide little practical protection. Yurun provides a clearly documented 1-year whole-machine warranty covering all manufacturing defects and material failures — double the industry standard — plus 90 days on consumable items. A formal warranty annex document with specific terms, exclusions, and the claim process is provided with every machine, giving buyers the clarity and legal protection needed for a major capital equipment purchase." ,
+        desc_cn:"质保条款反映制造商对产品质量的信心和售后服务承诺。许多供应商提供含糊或极有限的质保（通常仅'3个月'，无书面条款），实际保障有限。钰润提供有据可查的整机一年保修，涵盖所有制造缺陷和材料故障——是行业标准的两倍；易损件 90 天保修。随每台机器提供包含具体条款、免责范围和索赔流程的正式质保附件文件，为大型资本设备采购提供买家所需的清晰保障和法律保护。",
+      },
+      { id:"o15", cn:"整机标准件",     en:"Standard Parts",            fixed:"Brand: DONGMING", img:true,
+        desc:"Standardizing all fasteners on a single brand is a deliberate quality decision with long-term operational benefits. Mixing fasteners from multiple unknown suppliers creates hidden risks: inconsistent thread pitch, incorrect grade markings, and variable hardness that can lead to fastener stripping or fatigue failure. DONGMING is a certified manufacturer of 304 stainless steel fasteners with traceable material certificates. Using a single brand throughout the machine also simplifies spare parts stocking for the customer — one supplier, one part number system — reducing maintenance complexity and error risk when ordering replacements." ,
+        desc_cn:"整机紧固件统一使用单一品牌是经深思熟虑的质量决策，具有长期运营效益。混用多家未知供应商紧固件隐患重重：螺纹节距不一致、强度级别标识错误、硬度不均，可能导致螺纹滑牙或疲劳断裂。东明是具备可追溯材料证书的 304 不锈钢紧固件认证制造商。整机使用单一品牌也简化客户备件库存——一家供应商、一套料号体系，降低维护复杂度和订购替换件时的出错风险。",
+      },
     ]
   },
 ];
@@ -1135,23 +1434,23 @@ function rebuildSections() {
       if (ths[2]) ths[2].textContent = i18n.thSel[L];
     }
 
-    // Item rows
+    // Item rows — use data rows only (skip detail rows)
     const tbody = document.getElementById('tbody-' + sec.id);
     if (!tbody) return;
-    const rows = tbody.querySelectorAll('tr');
 
-    sec.items.forEach((it, idx) => {
-      if (idx >= rows.length) return;
-      const row = rows[idx];
-      const partNameCell = row.querySelector('td.part-name');
+    sec.items.forEach((it) => {
+      const detailTr = document.getElementById('detail-tr-' + it.id);
+      // main row is the sibling before detail row, or query directly
+      const partNameCell = document.querySelector(`#tbody-${sec.id} td.part-name[onclick*="${it.id}"], #tbody-${sec.id} tr:not(.row-detail-tr) td.part-name`);
 
-      const actionCell = row.querySelector('td.action');
-
-      // Update part name column based on language
-      if (partNameCell) {
-        partNameCell.textContent = L === 'en' ? it.en : it.cn;
+      // safer: find main tr as the one before the detail tr, or the first tr for non-detail items
+      const mainTr = detailTr ? detailTr.previousElementSibling : null;
+      const nameCell = mainTr ? mainTr.querySelector('td.part-name') : null;
+      if (nameCell) {
+        nameCell.textContent = L === 'en' ? it.en : it.cn;
       }
 
+      const actionCell = document.getElementById('action-' + it.id);
       // Update action cell labels
       if (it.fixed && actionCell) {
         const span = actionCell.querySelector('span');
@@ -1161,6 +1460,24 @@ function rebuildSections() {
         if (selLabel && !state[it.id]) {
           selLabel.textContent = TXT.notSelected;
         }
+      }
+
+      // Update detail row labels
+      if (detailTr) {
+        const titles = detailTr.querySelectorAll('.detail-block-title');
+        if (titles[0]) titles[0].innerHTML = `📋 ${L === 'en' ? 'Description' : '介绍'}`;
+        if (titles[1]) titles[1].innerHTML = `🖼️ ${L === 'en' ? 'Product Image' : '产品图片'}`;
+        const slotLabel = detailTr.querySelector('.slot-label');
+        if (slotLabel) slotLabel.textContent = L === 'en' ? 'Image placeholder — to be added' : '图片待添加';
+        const imgEl = document.getElementById('detail-img-el-' + it.id);
+        if (imgEl) imgEl.alt = L === 'en' ? it.en : it.cn;
+        // Swap description text on language change
+        const descDiv = document.getElementById('detail-desc-' + it.id);
+        if (descDiv && !descDiv.style.color) {
+          descDiv.textContent = L === 'en' ? (it.desc || it.desc_cn) : (it.desc_cn || it.desc);
+        }
+        const noDesc = detailTr.querySelector('.detail-desc[style]');
+        if (noDesc) noDesc.textContent = L === 'en' ? 'No description available yet.' : '暂无介绍';
       }
     });
   });
@@ -1213,12 +1530,15 @@ function buildSections() {
     const tbody = document.getElementById(`tbody-${sec.id}`);
     sec.items.forEach(it => {
       const tr = document.createElement('tr');
+      const hasDetail = !!(it.desc || it.img);
+      if (hasDetail) tr.classList.add('has-detail');
 
       const partName = currentLang === 'en' ? it.en : it.cn;
       let specHtml = '';
       let actionHtml = '';
 
       if (it.fixed) {
+        // img:true items show image in the detail row, not inline anymore
         specHtml = `<span class="single-value">${it.fixed}</span>`;
         actionHtml = `<span style="color:#27ae60;font-size:12px;font-weight:600">${TXT.standard}</span>`;
       } else {
@@ -1234,12 +1554,49 @@ function buildSections() {
         actionHtml = `<span id="sel-label-${it.id}" style="font-size:12px;color:#a0aec0;font-style:italic">${TXT.notSelected}</span>`;
       }
 
+      const clickAttr = hasDetail ? `onclick="toggleRowDetail('${it.id}')"` : '';
       tr.innerHTML = `
-        <td class="part-name">${partName}</td>
+        <td class="part-name" ${clickAttr}>${partName}</td>
         <td class="spec">${specHtml}</td>
         <td class="action" id="action-${it.id}">${actionHtml}</td>`;
 
       tbody.appendChild(tr);
+
+      // detail row
+      if (hasDetail) {
+        const trDetail = document.createElement('tr');
+        trDetail.className = 'row-detail-tr';
+        trDetail.id = `detail-tr-${it.id}`;
+
+        const descText = currentLang === 'en' ? (it.desc || it.desc_cn) : (it.desc_cn || it.desc);
+        const descHtml = descText
+          ? `<div>
+               <div class="detail-block-title">📋 ${currentLang === 'en' ? 'Description' : '介绍'}</div>
+               <div class="detail-desc" id="detail-desc-${it.id}">${descText}</div>
+             </div>`
+          : `<div>
+               <div class="detail-block-title">📋 ${currentLang === 'en' ? 'Description' : '介绍'}</div>
+               <div class="detail-desc" style="color:#b0bec5;font-style:italic">${currentLang === 'en' ? 'No description available yet.' : '暂无介绍'}</div>
+             </div>`;
+
+        const imgHtml = `<div>
+               <div class="detail-block-title">🖼️ ${currentLang === 'en' ? 'Product Image' : '产品图片'}</div>
+               <div class="detail-img-slot" id="detail-img-${it.id}">
+                 <img src="images/${it.id}.jpg"
+                      alt="${it.en}"
+                      onerror="handleImgError(this, '${it.id}')"
+                      onload="handleImgLoad(this, '${it.id}')"
+                      style="display:none" id="detail-img-el-${it.id}">
+                 <span class="slot-icon" id="detail-img-icon-${it.id}">📷</span>
+                 <span class="slot-label" id="detail-img-label-${it.id}">${currentLang === 'en' ? 'Image placeholder — to be added' : '图片待添加'}</span>
+               </div>
+             </div>`;
+
+        trDetail.innerHTML = `<td class="row-detail-cell" colspan="3">
+          <div class="row-detail-inner">${descHtml}${imgHtml}</div>
+        </td>`;
+        tbody.appendChild(trDetail);
+      }
     });
   });
 }
@@ -1283,6 +1640,57 @@ function updateStats() {
   document.getElementById('pendingCount').textContent = pending;
   document.getElementById('completionPct').textContent = pct + '%';
   document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ── ROW DETAIL TOGGLE ─────────────────────────────────────────────────────────
+function toggleRowDetail(itemId) {
+  const detailTr = document.getElementById(`detail-tr-${itemId}`);
+  if (!detailTr) return;
+  const isOpen = detailTr.classList.contains('open');
+
+  // Find parent tr (the main data row) — it precedes the detail tr
+  const mainTr = detailTr.previousElementSibling;
+
+  if (isOpen) {
+    detailTr.classList.remove('open');
+    if (mainTr) mainTr.classList.remove('detail-open');
+  } else {
+    detailTr.classList.add('open');
+    if (mainTr) mainTr.classList.add('detail-open');
+  }
+}
+
+// ── IMAGE LOADER ───────────────────────────────────────────────────────────────
+// Called when an image fails to load — try .png, then .webp, then show placeholder
+function handleImgError(imgEl, itemId) {
+  const src = imgEl.src;
+  if (src.endsWith('.jpg')) {
+    imgEl.src = `images/${itemId}.png`;
+  } else if (src.endsWith('.png')) {
+    imgEl.src = `images/${itemId}.webp`;
+  } else {
+    // All formats failed — show placeholder
+    imgEl.style.display = 'none';
+    const icon = document.getElementById('detail-img-icon-' + itemId);
+    const label = document.getElementById('detail-img-label-' + itemId);
+    if (icon) icon.style.display = '';
+    if (label) label.style.display = '';
+  }
+}
+
+// Called when image loads successfully
+function handleImgLoad(imgEl, itemId) {
+  imgEl.style.display = 'block';
+  const icon = document.getElementById('detail-img-icon-' + itemId);
+  const label = document.getElementById('detail-img-label-' + itemId);
+  if (icon) icon.style.display = 'none';
+  if (label) label.style.display = 'none';
+  // Remove dashed border when image is present
+  const slot = document.getElementById('detail-img-' + itemId);
+  if (slot) {
+    slot.style.border = 'none';
+    slot.style.background = '#fff';
+  }
 }
 
 // ── TOGGLE ────────────────────────────────────────────────────────────────────
