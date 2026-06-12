@@ -33,12 +33,56 @@ tbody tr:hover { background: #e8f4fc; }
 tbody tr:nth-child(even) { background: #fafafa; }
 tbody tr:nth-child(even):hover { background: #e8f4fc; }
 .no-wrap { white-space: nowrap; }
+
+/* Image placeholder column */
+.img-cell { width: 52px; padding: 4px 6px; }
+.img-placeholder {
+    width: 44px; height: 44px;
+    border: 1.5px dashed #c0c0c0;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    background: #f9f9f9;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+.img-placeholder:hover { border-color: #3498db; background: #eaf4fb; }
+.img-placeholder span { color: #bbb; font-size: 20px; line-height: 1; user-select: none; }
+.img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
+.img-placeholder input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+
+/* Multi-spec tags in Model cell */
+.spec-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.spec-tag {
+    display: inline-block;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #3730a3;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+    font-weight: 500;
+}
+.spec-tag .qty-badge {
+    display: inline-block;
+    background: #3730a3;
+    color: #fff;
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 10px;
+    margin-left: 3px;
+    font-weight: 600;
+}
 </style>
 </head>
 <body>
 <div class="header">
     <h1>Yurun Spare Parts</h1>
-    <div class="count">Total: <span id="visible-count">82</span> items</div>
+    <div class="count">Total: <span id="visible-count">0</span> items</div>
 </div>
 
 <input type="search" class="search-box" id="searchInput" placeholder="Search parts..." autofocus>
@@ -48,95 +92,144 @@ tbody tr:nth-child(even):hover { background: #e8f4fc; }
         <thead>
             <tr>
                 <th onclick="sortTable(0)">#</th>
-                <th onclick="sortTable(1)">Chinese</th>
-                <th onclick="sortTable(2)">English</th>
-                <th onclick="sortTable(3)">Model</th>
-                <th onclick="sortTable(4)">Qty</th>
+                <th>Image</th>
+                <th onclick="sortTable(2)">Chinese</th>
+                <th onclick="sortTable(3)">English</th>
+                <th onclick="sortTable(4)">Spec</th>
+                <th onclick="sortTable(5)">Qty</th>
             </tr>
         </thead>
         <tbody id="tableBody">
-<tr><td class="no-wrap">1</td><td>主板</td><td>MAIN CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">2</td><td>储纬器主板</td><td>FEEDER CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">3</td><td></td><td>FEEDER HOOK PIN</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">4</td><td></td><td>BREAK CARD PANEL</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">5</td><td></td><td>MAIN MOTER</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">6</td><td>无级变速器</td><td>ZEROMAX (NIDEC SHIMPO JAPAN)</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">8</td><td>柱塞套件</td><td>PLUNGER KIT 36/24</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">9</td><td>水泵</td><td>PUMP (JL)</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">10</td><td>单向阀号</td><td>ONE WAY VALVE SHEET 6</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">11</td><td>单向阀号</td><td>ONE WAY VALVE SHEET 8</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">12</td><td>手动润滑油泵</td><td>GREASING PUMP</td><td></td><td>0</td></tr>
-<tr><td class="no-wrap">13</td><td>轴承</td><td>BEARING</td><td>6006,6206,6210</td><td>1</td></tr>
-<tr><td class="no-wrap">14</td><td>轴承</td><td>BEARING</td><td>6201,6308,6306</td><td>1</td></tr>
-<tr><td class="no-wrap">15</td><td>耳丝机</td><td>LENO WENDER MACHINE</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">16</td><td>光探</td><td>FILLRER WIRE</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">17</td><td>轴承</td><td>NURT 15</td><td></td><td>2</td></tr>
-<tr><td class="no-wrap">18</td><td>轴承</td><td>NURT 19/16</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">19</td><td>泵簧</td><td>PUMP SPRING</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">20</td><td>水泵型环</td><td>PUMP O-RING</td><td></td><td>20</td></tr>
-<tr><td class="no-wrap">21</td><td>柱塞连杆</td><td>PUMP PATTI</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">22</td><td>水泵别针</td><td>PUMP PIN</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">23</td><td>水泵凸轮</td><td>PUMP CAM</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">24</td><td>环</td><td>PU RING</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">25</td><td>剪刀片左</td><td>CUTTER BLADE LEFT</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">26</td><td>剪刀片右</td><td>CUTTER BLADE RIGHT</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">27</td><td>剪刀轴左</td><td>CUTTER SHAFT LEFT</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">28</td><td>耳丝齿轮轴接头</td><td>LENO GEAR SHAFT NIPPLE</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">29</td><td>耳丝齿轮轴垫圈</td><td>LENO GEAR SHAFT WASHER</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">30</td><td>耳丝锁片</td><td>LENO LOCK PATTI</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">31</td><td>耳丝支架杆</td><td>LENO HOLDER SHAFT</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">32</td><td>耳丝轮衬套</td><td>LENO BOBIN BUSH</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">33</td><td>耳丝齿轮齿</td><td>LENO GEAR 21T</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">34</td><td>耳丝弹簧</td><td>LENO SPRING</td><td></td><td>25</td></tr>
-<tr><td class="no-wrap">35</td><td>剪刀轴右</td><td>CUTTER SHAFT RIGHT</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">36</td><td>耳丝星号橡胶</td><td>LENO STAR RUBBER</td><td></td><td>12</td></tr>
-<tr><td class="no-wrap">37</td><td>耳丝弹簧稳定器</td><td>LENO SPRING STABILLIZER</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">38</td><td>耳丝弹簧钩</td><td>LENO SPRING HOOK</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">39</td><td>耳丝小件</td><td>LENO PAUL</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">40</td><td>耳丝磁钩</td><td>LENO MAGNET</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">41</td><td>耳丝螺母</td><td>LENO MF NUT</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">42</td><td>耳丝弹簧钩</td><td>LENO PIN</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">43</td><td>耳丝支架</td><td>LENO HOLDER</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">44</td><td>丝导</td><td>YARN GUIDE</td><td></td><td>2</td></tr>
-<tr><td class="no-wrap">45</td><td>综框钩</td><td>FRAME HOOK</td><td></td><td>50</td></tr>
-<tr><td class="no-wrap">46</td><td>皮带</td><td>BELT</td><td>3VX1X</td><td>1</td></tr>
-<tr><td class="no-wrap">47</td><td>皮带</td><td>BELT</td><td>ZEROMAX</td><td>1</td></tr>
-<tr><td class="no-wrap">48</td><td>皮带</td><td>BELT</td><td>MX33</td><td>1</td></tr>
-<tr><td class="no-wrap">49</td><td>皮带</td><td>BELT</td><td>MX29</td><td>1</td></tr>
-<tr><td class="no-wrap">50</td><td>主电机皮带</td><td>BELT</td><td>MAIN MOTER</td><td>1</td></tr>
-<tr><td class="no-wrap">51</td><td></td><td>PEAK SHAFT</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">52</td><td></td><td>PEAK SLEEVE</td><td></td><td>1</td></tr>
-<tr><td class="no-wrap">53</td><td>轴承</td><td>BEARING</td><td>607</td><td>5</td></tr>
-<tr><td class="no-wrap">54</td><td>轴承</td><td>BEARING</td><td>6000</td><td>3</td></tr>
-<tr><td class="no-wrap">55</td><td>轴承</td><td>BEARING</td><td>6001</td><td>3</td></tr>
-<tr><td class="no-wrap">56</td><td>弹簧垫圈</td><td>SPRING WAISHER</td><td></td><td>12</td></tr>
-<tr><td class="no-wrap">57</td><td>螺栓螺</td><td>BOLT AND NUT</td><td></td><td>1 box</td></tr>
-<tr><td class="no-wrap">58</td><td>废丝轮滑轮小号</td><td>CATCHCOT PULLY SMALL</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">59</td><td>废丝滑轮大号</td><td>CATCHCOT PULLY BIG</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">60</td><td>废丝片</td><td>CATHCOT PLATE</td><td></td><td>5</td></tr>
-<tr><td class="no-wrap">61</td><td>油封</td><td>OIL SEAL</td><td>12*19*3</td><td>2</td></tr>
-<tr><td class="no-wrap">62</td><td>油封</td><td>OIL SEAL</td><td>25*40*7</td><td>2</td></tr>
-<tr><td class="no-wrap">63</td><td>油封</td><td>OIL SEAL</td><td>28*45*8</td><td>1</td></tr>
-<tr><td class="no-wrap">64</td><td>油封</td><td>OIL SEAL</td><td>35*52*7</td><td>1</td></tr>
-<tr><td class="no-wrap">65</td><td>油封</td><td>OIL SEAL</td><td>48*65*10</td><td>1</td></tr>
-<tr><td class="no-wrap">66</td><td>油封</td><td>OIL SEAL</td><td>30*52*8</td><td>1</td></tr>
-<tr><td class="no-wrap">67</td><td>油封</td><td>OIL SEAL</td><td>70*88*12</td><td>1</td></tr>
-<tr><td class="no-wrap">68</td><td>润滑油头平口</td><td>GREASE NIPPLE 6MM PLAIN</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">69</td><td>润滑油头度角</td><td>GREASE NIPPLE 10MM 45°</td><td></td><td>6</td></tr>
-<tr><td class="no-wrap">70</td><td>换向阀联轴器</td><td>CHANGE VALVE COUPLIN</td><td></td><td>2</td></tr>
-<tr><td class="no-wrap">71</td><td>销子</td><td>KEY</td><td>5*5*12</td><td>3</td></tr>
-<tr><td class="no-wrap">72</td><td>销子</td><td>KEY</td><td>5*5*15</td><td>3</td></tr>
-<tr><td class="no-wrap">73</td><td>销子</td><td>KEY</td><td>6*6*15</td><td>3</td></tr>
-<tr><td class="no-wrap">74</td><td>销子</td><td>KEY</td><td>6*6*20</td><td>3</td></tr>
-<tr><td class="no-wrap">75</td><td>销子</td><td>KEY</td><td>7*7*22</td><td>3</td></tr>
-<tr><td class="no-wrap">76</td><td>销子</td><td>KEY</td><td>7*7*25</td><td>3</td></tr>
-<tr><td class="no-wrap">77</td><td>连接螺栓</td><td>JONT BOLT 6MM</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">78</td><td>钢筘夹</td><td>REED CLAMP</td><td></td><td>3</td></tr>
-<tr><td class="no-wrap">79</td><td>六角螺母</td><td>HEX NUT</td><td></td><td>12</td></tr>
-<tr><td class="no-wrap">80</td><td>综丝</td><td>HEALD WIRE PLAIN</td><td></td><td>10000</td></tr>
-<tr><td class="no-wrap">81</td><td></td><td>HEALD WIRE CAM</td><td></td><td>12000</td></tr>
-<tr><td class="no-wrap">82</td><td></td><td>HEALD WIRE DOBBY</td><td></td><td>12000</td></tr>
-<tr><td class="no-wrap">83</td><td></td><td>CAM & DOBBY PART STANDARD</td><td></td><td></td></tr>
+
+<tr><td class="no-wrap">1</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>电控主板</td><td>MAIN CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">2</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>储纬器主板</td><td>FEEDER CARD (SANHE-XINLIAO)</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">3</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>主电机</td><td>MAIN MOTOR</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">4</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>无级变速器</td><td>ZEROMAX</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">5</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>工具箱</td><td>TOOL KIT</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">6</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>柱塞套件36/24</td><td>PLUNGER KIT 36/24</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">7</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>水泵（JL）</td><td>PUMP (JL)</td><td></td><td>1</td></tr>
+
+<!-- 8/9 合并: ONE WAY VALVE DISC -->
+<tr><td class="no-wrap">8–9</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>单向阀密封片</td><td>ONE WAY VALVE DISC</td>
+<td><div class="spec-list">
+  <span class="spec-tag">6<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">8<span class="qty-badge">×3</span></span>
+</div></td>
+<td>6</td></tr>
+
+<!-- 11/12 合并: BEARING (standard) -->
+<tr><td class="no-wrap">11–12</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>轴承</td><td>BEARING</td>
+<td><div class="spec-list">
+  <span class="spec-tag">6006<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">6206<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">6210<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">6201<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">6309<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">6306<span class="qty-badge">×1</span></span>
+</div></td>
+<td>6</td></tr>
+<tr><td class="no-wrap">13</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝机</td><td>LENO WINDER MACHINE</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">14</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>纬线探测丝</td><td>WEFT FEELER WIRE</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">15</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>轴承</td><td>NURT 15</td><td></td><td>2</td></tr>
+<tr><td class="no-wrap">16</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>轴承</td><td>NURT 19/16</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">17</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>泵簧</td><td>PUMP SPRING</td><td><div class="spec-list"><span class="spec-tag">10&#215;50&#215;135</span></div></td><td>1</td></tr>
+<tr><td class="no-wrap">18</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>水泵O型环</td><td>PUMP O-RING</td><td></td><td>20</td></tr>
+<tr><td class="no-wrap">19</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>柱塞连杆</td><td>PUMP CONNECTING ROD</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">20</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>水泵锁紧销</td><td>PUMP LOCK PIN</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">21</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>水泵凸轮</td><td>PUMP CAM</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">22</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>PU环</td><td>PU RING</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">23</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>剪刀片左</td><td>CUTTER BLADE LEFT</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">24</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>剪刀片右</td><td>CUTTER BLADE RIGHT</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">25</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>剪刀轴左</td><td>CUTTER SHAFT LEFT</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">33</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>剪刀轴右</td><td>CUTTER SHAFT RIGHT</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">26</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝齿轮轴接头</td><td>LENO GEAR SHAFT NIPPLE</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">27</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝齿轮轴垫圈</td><td>LENO GEAR SHAFT WASHER</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">28</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝锁片</td><td>LENO LOCK PATTI</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">29</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝支架杆</td><td>LENO HOLDER SHAFT</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">30</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝轮衬套</td><td>LENO BOBIN BUSH</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">31</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝齿轮21齿</td><td>LENO GEAR 21T</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">32</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝弹簧</td><td>LENO SPRING</td><td></td><td>25</td></tr>
+<tr><td class="no-wrap">34</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝星号橡胶</td><td>LENO STAR RUBBER</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">35</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝弹簧稳定器</td><td>LENO SPRING STABILIZER</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">36</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝弹簧钩</td><td>LENO SPRING HOOK</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">37</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝小件</td><td>LENO PAUL</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">38</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝磁钩</td><td>LENO MAGNET</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">39</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝MF螺母</td><td>LENO MF NUT</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">40</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝棘爪</td><td>LENO PAWL</td><td></td><td>6</td></tr>
+<tr><td class="no-wrap">41</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>耳丝支架</td><td>LENO HOLDER</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">42</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>丝导</td><td>YARN GUIDE</td><td></td><td>2</td></tr>
+<tr><td class="no-wrap">43</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>综框钩</td><td>FRAME HOOK</td><td></td><td>50</td></tr>
+
+<!-- 44–48 合并: BELT -->
+<tr><td class="no-wrap">44–48</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>皮带</td><td>BELT</td>
+<td><div class="spec-list">
+  <span class="spec-tag">3VX1X475</span>
+  <span class="spec-tag">ZEROMAX</span>
+  <span class="spec-tag">MX33</span>
+  <span class="spec-tag">MX29</span>
+  <span class="spec-tag">MAIN MOTOR</span>
+</div></td>
+<td>5</td></tr>
+<tr><td class="no-wrap">49</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>峰值凸轮轴</td><td>PEAK SHAFT</td><td></td><td>1</td></tr>
+<tr><td class="no-wrap">50</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>峰值凸轮套筒</td><td>PEAK SLEEVE</td><td></td><td>1</td></tr>
+
+<!-- 51–53 合并: BEARING (small) -->
+<tr><td class="no-wrap">51–53</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>轴承</td><td>BEARING</td>
+<td><div class="spec-list">
+  <span class="spec-tag">608<span class="qty-badge">×5</span></span>
+  <span class="spec-tag">6000<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">6001<span class="qty-badge">×3</span></span>
+</div></td>
+<td>11</td></tr>
+
+<tr><td class="no-wrap">54</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>弹簧垫圈</td><td>SPRING WASHER</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">55</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>螺栓螺母</td><td>BOLT AND NUT</td><td></td><td>1 box</td></tr>
+<tr><td class="no-wrap">56</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>废丝轮滑轮（小）</td><td>CATCH CORD PULLEY SMALL</td><td></td><td>5</td></tr>
+<tr><td class="no-wrap">58</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>废丝导板</td><td>CATCH CORD PLATE</td><td></td><td>5</td></tr>
+
+<!-- 59–65 合并: OIL SEAL -->
+<tr><td class="no-wrap">59–65</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>油封</td><td>OIL SEAL</td>
+<td><div class="spec-list">
+  <span class="spec-tag">12&#215;28&#215;7<span class="qty-badge">×2</span></span>
+  <span class="spec-tag">25&#215;40&#215;7<span class="qty-badge">×2</span></span>
+  <span class="spec-tag">28&#215;45&#215;8<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">32&#215;48&#215;8<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">48&#215;65&#215;9<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">30&#215;52&#215;8<span class="qty-badge">×1</span></span>
+  <span class="spec-tag">70&#215;88&#215;12<span class="qty-badge">×1</span></span>
+</div></td>
+<td>9</td></tr>
+
+<!-- 66/67 合并: GREASE NIPPLE -->
+<tr><td class="no-wrap">66–67</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>黄油嘴</td><td>GREASE NIPPLE</td>
+<td><div class="spec-list">
+  <span class="spec-tag">6mm 直通<span class="qty-badge">×6</span></span>
+  <span class="spec-tag">10mm 45°<span class="qty-badge">×6</span></span>
+</div></td>
+<td>12</td></tr>
+
+<tr><td class="no-wrap">68</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>换向阀联轴器</td><td>CHANGE VALVE COUPLING</td><td></td><td>2</td></tr>
+
+<!-- 69–74 合并: KEY -->
+<tr><td class="no-wrap">69–74</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>销子</td><td>KEY</td>
+<td><div class="spec-list">
+  <span class="spec-tag">5&#215;5&#215;12<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">5&#215;5&#215;15<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">6&#215;6&#215;15<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">6&#215;6&#215;20<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">7&#215;7&#215;22<span class="qty-badge">×3</span></span>
+  <span class="spec-tag">7&#215;7&#215;25<span class="qty-badge">×3</span></span>
+</div></td>
+<td>18</td></tr>
+
+<tr><td class="no-wrap">75</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>关节螺栓 6mm</td><td>JOINT BOLT 6MM</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">76</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>钢筘夹</td><td>REED CLAMP</td><td></td><td>3</td></tr>
+<tr><td class="no-wrap">77</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>六角螺母（6mm/8mm）</td><td>HEX NUT</td><td></td><td>12</td></tr>
+<tr><td class="no-wrap">78</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>综丝</td><td>HEALD WIRE PLAIN</td><td></td><td>10000</td></tr>
+<tr><td class="no-wrap">79</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>综丝（凸轮机）</td><td>HEALD WIRE (CAM)</td><td></td><td>12000</td></tr>
+<tr><td class="no-wrap">80</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>综丝（多臂机）</td><td>HEALD WIRE (DOBBY)</td><td></td><td>12000</td></tr>
+<tr><td class="no-wrap">81</td><td class="img-cell"><div class="img-placeholder"><span>+</span><input type="file" accept="image/*" onchange="loadImg(this)"></div></td><td>凸轮&amp;多臂机标准件</td><td>CAM &amp; DOBBY PART STANDARD</td><td></td><td></td></tr>
+
         </tbody>
     </table>
 </div>
@@ -144,11 +237,21 @@ tbody tr:nth-child(even):hover { background: #e8f4fc; }
 <script>
 const searchInput = document.getElementById('searchInput');
 const tableBody = document.getElementById('tableBody');
-const rows = tableBody.getElementsByTagName('tr');
 const visibleCount = document.getElementById('visible-count');
+
+function updateCount() {
+    const rows = tableBody.getElementsByTagName('tr');
+    let visible = 0;
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].style.display !== 'none') visible++;
+    }
+    visibleCount.textContent = visible;
+}
+updateCount();
 
 searchInput.addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
+    const rows = tableBody.getElementsByTagName('tr');
     let visible = 0;
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
@@ -177,6 +280,16 @@ function sortTable(colIndex) {
         return aText.localeCompare(bText) * dir;
     });
     rowsArray.forEach(row => tbody.appendChild(row));
+}
+
+function loadImg(input) {
+    if (!input.files || !input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const placeholder = input.parentElement;
+        placeholder.innerHTML = '<img src="' + e.target.result + '" alt="part">';
+    };
+    reader.readAsDataURL(input.files[0]);
 }
 </script>
 </body>
