@@ -64,7 +64,7 @@
   .card-body { padding: 18px; }
 
   /* Stats */
-  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
   .stat-card { background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 16px 18px; box-shadow: var(--shadow); }
   .stat-label { font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
   .stat-value { font-size: 28px; font-weight: 700; line-height: 1; }
@@ -180,6 +180,30 @@
 
   /* Tag */
   .tag { display: inline-block; padding: 2px 7px; background: var(--gray-light); border-radius: 4px; font-size: 11px; color: var(--text-sub); margin: 1px; }
+
+  /* Avatar */
+  .avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); flex-shrink: 0; background: var(--gray-light); }
+  .avatar-lg { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border); flex-shrink: 0; background: var(--gray-light); }
+  .avatar-placeholder { width: 36px; height: 36px; border-radius: 50%; background: var(--gray-light); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--gray); flex-shrink: 0; }
+  #avatar-tooltip { position: fixed; z-index: 9999; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.3); overflow: hidden; pointer-events: none; display: none; }
+  .avatar-placeholder-lg { width: 80px; height: 80px; border-radius: 50%; background: var(--gray-light); border: 3px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--gray); flex-shrink: 0; }
+  .photo-upload-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .photo-upload-wrap .photo-preview { position: relative; width: 80px; height: 80px; }
+  .photo-upload-wrap .photo-preview img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--border); }
+  .photo-upload-wrap .photo-preview .photo-remove { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; border-radius: 50%; background: var(--danger); color: #fff; font-size: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; }
+
+  /* Quote status badges */
+  .qs-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .qs-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .qs-pending { background: #fffbeb; color: #92400e; } .qs-pending::before { background: #f59e0b; }
+  .qs-accepted { background: #f0fdf4; color: #166534; } .qs-accepted::before { background: #22c55e; }
+  .qs-rejected { background: #fef2f2; color: #991b1b; } .qs-rejected::before { background: #ef4444; }
+  .qs-expired { background: #f3f4f6; color: #6b7280; } .qs-expired::before { background: #9ca3af; }
+
+  /* Quote card */
+  .quote-card { background: var(--gray-light); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; }
+  .quote-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .quote-amount { font-weight: 700; color: var(--primary); }
 
   /* Country flag emoji */
   .flag { font-size: 16px; }
@@ -358,9 +382,20 @@
       <div class="tabs">
         <div class="tab active" onclick="switchModalTab('info')" id="tab-info">基本信息</div>
         <div class="tab" onclick="switchModalTab('notes')" id="tab-notes">沟通记录</div>
+        <div class="tab" onclick="switchModalTab('quotes')" id="tab-quotes">报价记录</div>
       </div>
       <!-- Info tab -->
       <div id="modal-tab-info">
+        <div class="photo-upload-wrap">
+          <div class="photo-preview" id="photo-preview">
+            <div class="avatar-placeholder-lg">👤</div>
+          </div>
+          <div style="flex:1">
+            <label style="font-size:12px;font-weight:600;color:var(--text-sub);display:block;margin-bottom:6px">客户照片</label>
+            <input type="file" id="f-photo" accept="image/*" onchange="handlePhotoUpload(this)" style="font-size:12px">
+            <p style="font-size:11px;color:var(--text-sub);margin-top:4px">支持 JPG/PNG，建议不超过 200KB，照片存储在浏览器本地</p>
+          </div>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label>联系人姓名 *</label>
@@ -399,10 +434,6 @@
             <input type="text" id="f-product" placeholder="如：水射流织机 YR8101">
           </div>
           <div class="form-group">
-            <label>预计订单金额 (USD)</label>
-            <input type="text" id="f-amount" placeholder="如：50000">
-          </div>
-          <div class="form-group">
             <label>下次跟进日期</label>
             <input type="date" id="f-followup">
           </div>
@@ -436,6 +467,59 @@
           <textarea id="new-note-text" placeholder="记录沟通内容、客户反馈、下一步行动..." style="min-height:80px;width:100%;resize:vertical;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;margin-bottom:10px"></textarea>
         </div>
         <div id="notes-timeline" class="timeline"></div>
+      </div>
+      <!-- Quotes tab -->
+      <div id="modal-tab-quotes" style="display:none">
+        <div style="margin-bottom:14px;display:grid;grid-template-columns:1fr 240px;gap:12px">
+          <!-- Left: product textarea -->
+          <div>
+            <div class="form-group" style="margin:0">
+              <label>产品型号/配置</label>
+              <textarea id="new-quote-product" rows="9" placeholder="填写产品型号、配置参数、技术规格等" style="width:100%;resize:vertical;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;line-height:1.5"></textarea>
+            </div>
+          </div>
+          <!-- Right: other fields stacked -->
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="form-group" style="margin:0">
+              <label>报价日期</label>
+              <input type="date" id="new-quote-date" style="width:100%">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>数量</label>
+              <input type="text" id="new-quote-qty" placeholder="如：10" style="width:100%">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>单价</label>
+              <input type="text" id="new-quote-unit-price" placeholder="如：5000" style="width:100%">
+            </div>
+            <div style="display:flex;gap:6px">
+              <div class="form-group" style="margin:0;flex:1">
+                <label>货币</label>
+                <select class="form-select" id="new-quote-currency" style="width:100%">
+                  <option>USD</option><option>CNY</option><option>EUR</option><option>GBP</option><option>JPY</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin:0;width:70px">
+                <label>有效期(天)</label>
+                <input type="text" id="new-quote-validity" value="30" style="width:100%">
+              </div>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>报价状态</label>
+              <select class="form-select" id="new-quote-status" style="width:100%">
+                <option value="pending">待确认</option>
+                <option value="accepted">已接受</option>
+                <option value="rejected">已拒绝</option>
+                <option value="expired">已过期</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>备注</label>
+              <input type="text" id="new-quote-note" placeholder="付款方式等" style="width:100%">
+            </div>
+          </div>
+        </div>
+        <div id="quotes-list"></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -501,6 +585,12 @@ let searchQuery = '';
 // Dynamic maps
 let STATUS_MAP = {};
 let PRIORITY_MAP = {};
+const QUOTE_STATUS_MAP = {
+  pending: { label: '待确认', cls: 'qs-pending', icon: '⏳' },
+  accepted: { label: '已接受', cls: 'qs-accepted', icon: '✅' },
+  rejected: { label: '已拒绝', cls: 'qs-rejected', icon: '❌' },
+  expired: { label: '已过期', cls: 'qs-expired', icon: '⌛' },
+};
 
 function rebuildMaps() {
   STATUS_MAP = {};
@@ -627,6 +717,19 @@ function renderDashboard() {
   const statusCounts = {};
   customers.forEach(c => { statusCounts[c.status] = (statusCounts[c.status] || 0) + 1; });
 
+  // Quote stats
+  let totalQuoteAmount = 0;
+  let acceptedQuoteAmount = 0;
+  let totalQuotes = 0;
+  customers.forEach(c => {
+    (c.quotes || []).forEach(q => {
+      totalQuotes++;
+      const amt = q.qty && q.unitPrice ? Number(q.qty) * Number(q.unitPrice) : 0;
+      if (q.currency !== 'CNY') totalQuoteAmount += amt;
+      if (q.status === 'accepted') acceptedQuoteAmount += amt;
+    });
+  });
+
   return `
   <div id="dashboard-page">
   <div class="stats-grid">
@@ -649,6 +752,11 @@ function renderDashboard() {
       <div class="stat-label">需求确认客户</div>
       <div class="stat-value" style="color:var(--warning)">${statusCounts.needs_confirmed || 0}</div>
       <div class="stat-sub">样品阶段 ${statusCounts.sample || 0} 个</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">报价记录</div>
+      <div class="stat-value" style="color:#7c3aed">${totalQuotes}</div>
+      <div class="stat-sub">已接受金额 $${acceptedQuoteAmount.toLocaleString()}</div>
     </div>
   </div>
 
@@ -674,6 +782,7 @@ function renderDashboard() {
       <div class="card-body">
         ${recentAdded.length ? recentAdded.map(c => `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+            ${c.photo ? `<img src="${c.photo}" class="avatar">` : `<div class="avatar-placeholder">👤</div>`}
             <div style="flex:1">
               <div style="font-weight:600;font-size:13px">${c.name}</div>
               <div style="font-size:12px;color:var(--text-sub)">${c.company || ''} · ${c.country || ''}</div>
@@ -760,8 +869,13 @@ function renderCustomers() {
             const pm = PRIORITY_MAP[c.priority] || PRIORITY_MAP.medium;
             return `<tr>
               <td data-label="客户">
-                <div class="customer-name" style="cursor:pointer;color:var(--primary)" onclick="openDetail('${c.id}')">${c.name}</div>
-                <div class="customer-company">${c.company || '—'}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  ${c.photo ? `<img src="${c.photo}" class="avatar" onclick="openDetail('${c.id}')" style="cursor:pointer" onmouseenter="showAvatarTooltip(this)" onmouseleave="hideAvatarTooltip()">` : `<div class="avatar-placeholder" onclick="openDetail('${c.id}')" style="cursor:pointer">👤</div>`}
+                  <div>
+                    <div class="customer-name" style="cursor:pointer;color:var(--primary)" onclick="openDetail('${c.id}')">${c.name}</div>
+                    <div class="customer-company">${c.company || '—'}</div>
+                  </div>
+                </div>
               </td>
               <td data-label="国家">${c.country || '—'}</td>
               <td data-label="来源"><span class="tag">${c.source || '—'}</span></td>
@@ -1064,6 +1178,19 @@ function resetSettings() {
 function renderData() {
   return `
   <div style="margin-bottom:16px">
+    <div class="card" style="border-color:var(--primary);border-width:2px">
+      <div class="card-header" style="background:var(--primary-light)"><h3>💡 备份说明</h3></div>
+      <div class="card-body">
+        <div style="font-size:13px;color:var(--text-sub);line-height:1.8">
+          <p>✅ <strong>JSON 备份</strong>（推荐）：包含<strong>全部数据</strong>，包括客户照片、沟通记录、报价记录，适合完整备份与恢复。</p>
+          <p>📋 <strong>CSV 导出</strong>：仅导出文本/表格数据，<strong>不包含客户照片</strong>，适合用 Excel 查看或批量编辑。</p>
+          <p>⚠️ <strong>照片仅存在于 JSON 备份中</strong>，CSV 导入也不会恢复照片。如需保留照片，请务必定期导出 JSON 备份。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px">
     <div class="card">
       <div class="card-header"><h3>💾 数据持久化 ✅</h3></div>
       <div class="card-body">
@@ -1075,7 +1202,7 @@ function renderData() {
           <button class="btn btn-secondary" onclick="document.getElementById('json-import-file').click()">📂 导入 JSON（全量替换）</button>
           <input type="file" id="json-import-file" accept=".json" style="display:none"
             onchange="importJsonFromFile(this)">
-        <p style="font-size:11px;color:var(--warning);margin-top:8px">⚠️ JSON 导入将<strong>完整替换</strong>现有客户数据，请先导出备份</p>
+        <p style="font-size:11px;color:var(--warning);margin-top:8px">⚠️ JSON 导入将<strong>完整替换</strong>现有客户数据（含照片），请先导出备份</p>
         </div>
       </div>
     </div>
@@ -1087,6 +1214,7 @@ function renderData() {
       <div class="card-body">
         <p style="font-size:13px;color:var(--text-sub);margin-bottom:14px">将所有客户数据导出为 CSV 文件，可用 Excel 打开编辑。</p>
         <button class="btn btn-primary" onclick="exportCSV()">📥 下载 CSV 文件</button>
+        <p style="font-size:11px;color:var(--warning);margin-top:10px">⚠️ CSV 不包含客户照片，照片备份请使用 JSON 导出</p>
       </div>
     </div>
     <div class="card">
@@ -1105,7 +1233,7 @@ function renderData() {
     <div class="card-body">
       <p style="font-size:13px;color:var(--text-sub);margin-bottom:10px">支持的列名（第一行为表头）：</p>
       <div style="background:var(--gray-light);padding:12px;border-radius:6px;font-size:12px;font-family:monospace;overflow-x:auto;white-space:nowrap">
-        id,name,company,country,source,email,phone,status,priority,product,amount,followupDate,firstContact,tags,note,notes,createdAt
+        id,name,company,country,source,email,phone,status,priority,product,followupDate,firstContact,tags,note,notes,quotes,createdAt
       </div>
       <div style="margin-top:10px;font-size:12px;color:var(--text-sub)">
         <p>• <b>status</b> 可选值: new / contacted / needs_confirmed / quoted / sample / ordered / closed / lost</p>
@@ -1113,6 +1241,8 @@ function renderData() {
         <p>• <b>followupDate / firstContact</b> 格式: YYYY-MM-DD</p>
         <p>• <b>tags</b> 用英文分号分隔多个标签</p>
         <p>• <b>notes</b> 格式: 每条记录一行，用竖线分隔 "日期|渠道|内容"，多条用换行分隔</p>
+        <p>• <b>quotes</b> 格式: 每条报价一行，用竖线分隔 "日期|产品型号/配置|数量|单价|货币|有效期|状态|备注"，产品配置内的换行用分号替代，多条报价用换行分隔</p>
+        <p>• <b>quotes status</b> 可选值: pending / accepted / rejected / expired</p>
       </div>
     </div>
   </div>
@@ -1154,13 +1284,14 @@ function importJsonFromFile(input) {
 
 // ===================== CSV EXPORT =====================
 function exportCSV() {
-  const headers = ['id','name','company','country','source','email','phone','status','priority','product','amount','followupDate','firstContact','tags','note','notes','createdAt'];
+  const headers = ['id','name','company','country','source','email','phone','status','priority','product','followupDate','firstContact','tags','note','notes','quotes','createdAt'];
   const rows = customers.map(c => headers.map(h => {
     let v = c[h] ?? '';
     if (Array.isArray(v)) {
       if (h === 'notes') {
-        // notes: 序列化为 "日期|渠道|内容" 多行文本，导出的 CSV 可用 Excel 查看
-        v = (v || []).map(n => `${n.date || ''}|${n.channel || ''}|${n.text || ''}`).join('\n');
+        v = (v || []).map(n => `${n.date || ''}|${n.channel || ''}|${(n.text || '').replace(/\n/g, '; ')}`).join('\n');
+      } else if (h === 'quotes') {
+        v = (v || []).map(q => `${q.date || ''}|${(q.product || '').replace(/\n/g, '; ')}|${q.qty || ''}|${q.unitPrice || ''}|${q.currency || ''}|${q.validity || ''}|${q.status || ''}|${(q.note || '').replace(/\n/g, '; ')}`).join('\n');
       } else {
         v = v.join(';');
       }
@@ -1189,12 +1320,12 @@ function importCSV(input) {
   reader.onload = e => {
     try {
       const text = e.target.result.replace(/^\uFEFF/, '');
-      const lines = text.split(/\r?\n/).filter(l => l.trim());
-      if (lines.length < 2) { toast('CSV 文件为空或格式不正确', 'error'); return; }
-      const headers = parseCSVRow(lines[0]);
+      const rows = parseCSVText(text);
+      if (rows.length < 2) { toast('CSV 文件为空或格式不正确', 'error'); return; }
+      const headers = rows[0];
       let added = 0, skipped = 0;
-      for (let i = 1; i < lines.length; i++) {
-        const vals = parseCSVRow(lines[i]);
+      for (let i = 1; i < rows.length; i++) {
+        const vals = rows[i];
         if (vals.length < 2) continue;
         const obj = {};
         headers.forEach((h, idx) => { obj[h.trim()] = (vals[idx] || '').trim(); });
@@ -1215,14 +1346,17 @@ function importCSV(input) {
           status: obj.status || 'new',
           priority: obj.priority || 'medium',
           product: obj.product || '',
-          amount: obj.amount || '',
           followupDate: obj.followupDate || '',
           firstContact: obj.firstContact || new Date().toISOString().split('T')[0],
           tags: obj.tags ? obj.tags.split(';').map(t=>t.trim()).filter(Boolean) : [],
           note: obj.note || '',
-          notes: obj.notes ? obj.notes.split('\n').filter(l => l.trim()).map(l => {
+          notes: obj.notes ? obj.notes.split(/\r?\n/).filter(l => l.trim()).map(l => {
             const parts = l.split('|');
             return { id: genId(), date: parts[0] || '', channel: parts[1] || '', text: parts[2] || '', createdAt: Date.now() };
+          }) : [],
+          quotes: obj.quotes ? obj.quotes.split(/\r?\n/).filter(l => l.trim()).map(l => {
+            const parts = l.split('|');
+            return { id: genId(), date: parts[0] || '', product: parts[1] || '', qty: parts[2] || '', unitPrice: parts[3] || '', currency: parts[4] || 'USD', validity: parts[5] || '', status: parts[6] || 'pending', note: parts[7] || '', createdAt: Date.now() };
           }) : [],
           createdAt: obj.createdAt ? Number(obj.createdAt) : Date.now(),
         };
@@ -1240,20 +1374,30 @@ function importCSV(input) {
   reader.readAsText(file, 'UTF-8');
 }
 
-function parseCSVRow(row) {
-  const result = [];
-  let cur = '', inQ = false;
-  for (let i = 0; i < row.length; i++) {
-    const ch = row[i];
-    if (ch === '"') {
-      if (inQ && row[i+1] === '"') { cur += '"'; i++; }
-      else inQ = !inQ;
-    } else if (ch === ',' && !inQ) {
-      result.push(cur); cur = '';
-    } else cur += ch;
+// Proper CSV parser: handles quoted fields with embedded newlines, commas, and doubled quotes
+function parseCSVText(text) {
+  const rows = [];
+  let row = [], cur = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (text[i + 1] === '"') { cur += '"'; i++; }
+        else inQ = false;
+      } else cur += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { row.push(cur); cur = ''; }
+      else if (ch === '\r') { /* skip */ }
+      else if (ch === '\n') {
+        row.push(cur); rows.push(row); row = []; cur = '';
+      } else cur += ch;
+    }
   }
-  result.push(cur);
-  return result;
+  // flush last field/row
+  if (cur.length > 0 || row.length > 0) { row.push(cur); rows.push(row); }
+  // filter out empty rows
+  return rows.filter(r => r.some(f => f.trim() !== ''));
 }
 
 async function clearAllData() {
@@ -1268,6 +1412,79 @@ async function clearAllData() {
     console.error('清空数据失败:', err);
     toast('⚠️ 清空失败，请检查浏览器存储设置', 'error');
   }
+}
+
+// ===================== PHOTO =====================
+let tempPhoto = '';
+
+function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 200 * 1024) {
+    toast('照片大小超过 200KB，建议压缩后再上传', 'error');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    tempPhoto = e.target.result;
+    renderPhotoPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderPhotoPreview() {
+  const preview = document.getElementById('photo-preview');
+  if (!preview) return;
+  if (tempPhoto) {
+    preview.innerHTML = `<img src="${tempPhoto}" class="avatar-lg"><button class="photo-remove" onclick="removePhoto()" title="删除照片">×</button>`;
+  } else {
+    preview.innerHTML = `<div class="avatar-placeholder-lg">👤</div>`;
+  }
+}
+
+function removePhoto() {
+  tempPhoto = '';
+  const fileInput = document.getElementById('f-photo');
+  if (fileInput) fileInput.value = '';
+  renderPhotoPreview();
+}
+
+// ===================== QUOTES =====================
+let tempEditQuotes = [];
+
+function renderQuotesTimeline(customer) {
+  tempEditQuotes = customer ? JSON.parse(JSON.stringify(customer.quotes || [])) : [];
+  refreshQuotesTimeline();
+}
+
+function refreshQuotesTimeline() {
+  const container = document.getElementById('quotes-list');
+  if (!container) return;
+  const sorted = [...tempEditQuotes].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const qs = QUOTE_STATUS_MAP;
+  container.innerHTML = sorted.length ? sorted.map(q => {
+    const qsm = qs[q.status] || qs.pending;
+    const total = q.qty && q.unitPrice ? Number(q.qty) * Number(q.unitPrice) : 0;
+    const productHtml = q.product ? (q.product.includes('\n') ? q.product.split('\n').map(l => l.trim()).filter(Boolean).join('<br>') : q.product) : '未填写产品';
+    return `<div class="quote-card">
+      <div class="quote-card-header">
+        <span class="qs-badge ${qsm.cls}">${qsm.icon} ${qsm.label}</span>
+        <span style="font-size:12px;color:var(--text-sub)">${q.date || ''}</span>
+        <span class="quote-amount">${q.currency || 'USD'} ${total > 0 ? total.toLocaleString() : (q.unitPrice || '—')}</span>
+        <button class="btn btn-secondary btn-sm btn-icon" style="color:var(--danger)" onclick="deleteQuote('${q.id}')">🗑</button>
+      </div>
+      <div style="font-weight:600;font-size:13px;margin-bottom:4px">${productHtml}</div>
+      <div style="font-size:13px;color:var(--text-sub)">
+        ${q.qty ? `数量: ${q.qty}` : ''}${q.unitPrice ? ` · 单价: ${q.unitPrice}` : ''}${q.validity ? ` · 有效期: ${q.validity}天` : ''}
+        ${q.note ? `<br>备注: ${q.note}` : ''}
+      </div>
+    </div>`;
+  }).join('') : '<p style="color:var(--text-sub);font-size:13px">暂无报价记录</p>';
+}
+
+function deleteQuote(quoteId) {
+  tempEditQuotes = tempEditQuotes.filter(q => q.id !== quoteId);
+  refreshQuotesTimeline();
 }
 
 // ===================== MODAL HELPERS =====================
@@ -1299,6 +1516,8 @@ function openAddModal() {
   currentEditId = null;
   document.getElementById('modal-title').textContent = '新增客户';
   clearForm();
+  tempPhoto = '';
+  renderPhotoPreview();
   const defStatus = settings.statuses.find(s => s.active !== false)?.id || 'new';
   const defPriority = settings.priorities.find(p => p.active !== false)?.id || 'medium';
   populateFormSelects('', defStatus, defPriority);
@@ -1307,6 +1526,7 @@ function openAddModal() {
   document.getElementById('f-followup').value = defFollowup.toISOString().split('T')[0];
   switchModalTab('info');
   renderNotesTimeline(null);
+  renderQuotesTimeline(null);
   document.getElementById('customer-modal').style.display = 'flex';
 }
 
@@ -1322,23 +1542,29 @@ function openEditModal(id) {
   document.getElementById('f-email').value = c.email || '';
   document.getElementById('f-phone').value = c.phone || '';
   document.getElementById('f-product').value = c.product || '';
-  document.getElementById('f-amount').value = c.amount || '';
   document.getElementById('f-followup').value = c.followupDate || '';
   document.getElementById('f-first-contact').value = c.firstContact || '';
   document.getElementById('f-tags').value = (c.tags||[]).join(', ');
   document.getElementById('f-note').value = c.note || '';
+  tempPhoto = c.photo || '';
+  renderPhotoPreview();
   populateFormSelects(c.source || '', c.status || 'new', c.priority || 'medium');
   switchModalTab('info');
   renderNotesTimeline(c);
+  renderQuotesTimeline(c);
   document.getElementById('new-note-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('customer-modal').style.display = 'flex';
 }
 
 function clearForm() {
-  ['f-name','f-company','f-country','f-email','f-phone','f-product','f-amount','f-followup','f-first-contact','f-tags','f-note'].forEach(id => {
+  ['f-name','f-company','f-country','f-email','f-phone','f-product','f-followup','f-first-contact','f-tags','f-note'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  const photoEl = document.getElementById('f-photo');
+  if (photoEl) photoEl.value = '';
+  tempPhoto = '';
+  renderPhotoPreview();
 }
 
 function closeModal() {
@@ -1349,12 +1575,18 @@ function closeModal() {
 function switchModalTab(tab) {
   document.getElementById('modal-tab-info').style.display = tab === 'info' ? '' : 'none';
   document.getElementById('modal-tab-notes').style.display = tab === 'notes' ? '' : 'none';
+  document.getElementById('modal-tab-quotes').style.display = tab === 'quotes' ? '' : 'none';
   document.getElementById('tab-info').classList.toggle('active', tab === 'info');
   document.getElementById('tab-notes').classList.toggle('active', tab === 'notes');
+  document.getElementById('tab-quotes').classList.toggle('active', tab === 'quotes');
   if (tab === 'notes') {
     document.getElementById('new-note-date').value = new Date().toISOString().split('T')[0];
     const chEl = document.getElementById('new-note-channel');
     if (chEl) chEl.innerHTML = settings.channels.map(c => `<option>${c}</option>`).join('');
+  }
+  if (tab === 'quotes') {
+    document.getElementById('new-quote-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('new-quote-validity').value = '30';
   }
 }
 
@@ -1378,6 +1610,29 @@ function saveCustomer() {
     refreshNotesTimeline();
   }
 
+  // Auto-save quote: if quote fields have data, validate and add to tempEditQuotes
+  const quoteProduct = document.getElementById('new-quote-product').value.trim();
+  if (quoteProduct) {
+    const quote = {
+      id: genId(),
+      date: document.getElementById('new-quote-date').value,
+      product: quoteProduct,
+      qty: document.getElementById('new-quote-qty').value.trim(),
+      unitPrice: document.getElementById('new-quote-unit-price').value.trim(),
+      currency: document.getElementById('new-quote-currency').value,
+      validity: document.getElementById('new-quote-validity').value.trim(),
+      status: document.getElementById('new-quote-status').value,
+      note: document.getElementById('new-quote-note').value.trim(),
+      createdAt: Date.now(),
+    };
+    tempEditQuotes.push(quote);
+    document.getElementById('new-quote-product').value = '';
+    document.getElementById('new-quote-qty').value = '';
+    document.getElementById('new-quote-unit-price').value = '';
+    document.getElementById('new-quote-validity').value = '30';
+    document.getElementById('new-quote-note').value = '';
+  }
+
   const tagsRaw = document.getElementById('f-tags').value;
   const tags = tagsRaw.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
 
@@ -1393,11 +1648,12 @@ function saveCustomer() {
       status: document.getElementById('f-status').value,
       priority: document.getElementById('f-priority').value,
       product: document.getElementById('f-product').value.trim(),
-      amount: document.getElementById('f-amount').value.trim(),
       followupDate: document.getElementById('f-followup').value,
       firstContact: document.getElementById('f-first-contact').value,
       tags, note: document.getElementById('f-note').value.trim(),
+      photo: tempPhoto,
       notes: JSON.parse(JSON.stringify(tempEditNotes)),
+      quotes: JSON.parse(JSON.stringify(tempEditQuotes)),
       updatedAt: Date.now(),
     });
     toast('客户信息已更新', 'success');
@@ -1412,11 +1668,12 @@ function saveCustomer() {
       status: document.getElementById('f-status').value,
       priority: document.getElementById('f-priority').value,
       product: document.getElementById('f-product').value.trim(),
-      amount: document.getElementById('f-amount').value.trim(),
       followupDate: document.getElementById('f-followup').value,
       firstContact: document.getElementById('f-first-contact').value,
       tags, note: document.getElementById('f-note').value.trim(),
+      photo: tempPhoto,
       notes: JSON.parse(JSON.stringify(tempEditNotes)),
+      quotes: JSON.parse(JSON.stringify(tempEditQuotes)),
       createdAt: Date.now(),
     });
     toast('客户已添加', 'success');
@@ -1494,21 +1751,23 @@ function renderDetailBody(c) {
   const sm = STATUS_MAP[c.status] || {};
   const info = getFollowupInfo(c.followupDate);
   const sortedNotes = [...(c.notes||[])].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const sortedQuotes = [...(c.quotes||[])].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const qs = QUOTE_STATUS_MAP;
 
   document.getElementById('detail-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      ${c.photo ? `<img src="${c.photo}" class="avatar-lg">` : `<div class="avatar-placeholder-lg">👤</div>`}
+      <div>
+        <div style="font-size:18px;font-weight:700">${c.name}</div>
+        <div style="font-size:13px;color:var(--text-sub)">${c.company || ''} · ${c.country || ''}</div>
+        <div style="display:flex;gap:6px;margin-top:6px">
+          <span class="status-badge ${sm.cls||''}">${sm.label||c.status}</span>
+          <span class="priority-badge ${pm.cls}">${pm.icon} ${pm.label}</span>
+        </div>
+      </div>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-      <div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">状态</div>
-        <span class="status-badge ${sm.cls||''}">${sm.label||c.status}</span>
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">优先级</div>
-        <span class="priority-badge ${pm.cls}">${pm.icon} ${pm.label}</span>
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">国家/地区</div>
-        <div style="font-size:14px">${c.country || '—'}</div>
-      </div>
       <div>
         <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">来源渠道</div>
         <div style="font-size:14px">${c.source || '—'}</div>
@@ -1524,10 +1783,6 @@ function renderDetailBody(c) {
       <div>
         <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">产品需求</div>
         <div style="font-size:14px">${c.product || '—'}</div>
-      </div>
-      <div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">预计金额 (USD)</div>
-        <div style="font-size:14px">${c.amount ? '$' + Number(c.amount).toLocaleString() : '—'}</div>
       </div>
       <div>
         <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px">首次联系</div>
@@ -1561,7 +1816,28 @@ function renderDetailBody(c) {
             </div>
           </div>`).join('')}
       </div>` : '<p style="font-size:13px;color:var(--text-sub)">暂无沟通记录，点击"编辑"添加记录</p>'}
-    </div>`;
+    </div>
+
+    ${sortedQuotes.length > 0 ? `<div style="margin-top:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px">报价记录（${sortedQuotes.length}）</div>
+      ${sortedQuotes.map(q => {
+        const qsm = qs[q.status] || qs.pending;
+        const total = q.qty && q.unitPrice ? Number(q.qty) * Number(q.unitPrice) : 0;
+        const productHtml = q.product ? (q.product.includes('\n') ? q.product.split('\n').map(l => l.trim()).filter(Boolean).join('<br>') : q.product) : '未填写';
+        return `<div class="quote-card">
+          <div class="quote-card-header">
+            <span class="qs-badge ${qsm.cls}">${qsm.icon} ${qsm.label}</span>
+            <span style="font-size:12px;color:var(--text-sub)">${q.date || ''}</span>
+            <span class="quote-amount">${q.currency || 'USD'} ${total > 0 ? total.toLocaleString() : (q.unitPrice || '—')}</span>
+          </div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:4px">${productHtml}</div>
+          <div style="font-size:13px;color:var(--text-sub)">
+            ${q.qty ? `数量: ${q.qty}` : ''}${q.unitPrice ? ` · 单价: ${q.unitPrice}` : ''}${q.validity ? ` · 有效期: ${q.validity}天` : ''}
+            ${q.note ? `<br>备注: ${q.note}` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>` : ''}`;
 }
 
 function editCurrentCustomer() {
@@ -1636,6 +1912,29 @@ function toast(msg, type = 'info') {
   setTimeout(() => div.remove(), 3000);
 }
 
+// ===================== AVATAR TOOLTIP =====================
+function showAvatarTooltip(el) {
+  const src = el.src;
+  if (!src) return;
+  const tip = document.getElementById('avatar-tooltip');
+  tip.innerHTML = `<img src="${src}" style="width:120px;height:120px;object-fit:cover;display:block;">`;
+  const rect = el.getBoundingClientRect();
+  const size = 120, small = 36, offset = (size - small) / 2;
+  let left = rect.left;
+  let top = rect.top - offset;
+  // keep within viewport
+  if (left + size > window.innerWidth) left = window.innerWidth - size - 4;
+  if (top < 0) top = 4;
+  if (top + size > window.innerHeight) top = window.innerHeight - size - 4;
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+  tip.style.display = 'block';
+}
+
+function hideAvatarTooltip() {
+  document.getElementById('avatar-tooltip').style.display = 'none';
+}
+
 // ===================== SAMPLE DATA =====================
 // loadSampleData is intentionally empty — real data is loaded from IndexedDB at startup.
 // No hardcoded sample data to keep the system clean.
@@ -1648,5 +1947,6 @@ loadData().then(() => {
   renderPage();
 });
 </script>
+<div id="avatar-tooltip"></div>
 </body>
 </html>
