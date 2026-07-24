@@ -308,6 +308,13 @@
   .toast-error { background: #991b1b; color: #fff; }
   .toast-info { background: #1e40af; color: #fff; }
   @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* Quote Calculator */
+  .quote-page-wrap { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
+  .quote-config { display: flex; flex-direction: column; gap: 14px; }
+  .quote-row { display: flex; flex-direction: column; gap: 4px; }
+  .quote-label { font-size: 12px; font-weight: 600; color: var(--text-sub); text-transform: uppercase; letter-spacing: .03em; }
+  @media (max-width: 768px) { .quote-page-wrap { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -325,6 +332,9 @@
       </div>
       <div class="nav-item" onclick="showPage('customers')" id="nav-customers">
         <span class="icon">👥</span><span>客户列表</span>
+      </div>
+      <div class="nav-item" onclick="showPage('quote')" id="nav-quote">
+        <span class="icon">💰</span><span>报价计算</span>
       </div>
       <div class="nav-item" onclick="showPage('reminders')" id="nav-reminders">
         <span class="icon">🔔</span><span>跟进提醒</span>
@@ -346,7 +356,7 @@
   <div class="main">
     <div class="topbar">
       <h2 id="page-title">数据概览</h2>
-      <button class="btn btn-primary" onclick="openAddModal()">
+      <button class="btn btn-primary" id="btn-add-customer" onclick="openAddModal()">
         ＋ 新增客户
       </button>
     </div>
@@ -683,8 +693,10 @@ function showPage(page) {
   currentPage = page;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('nav-' + page).classList.add('active');
-  const titles = { dashboard: '数据概览', customers: '客户列表', reminders: '跟进提醒', data: '数据管理', settings: '系统设置' };
+  const titles = { dashboard: '数据概览', customers: '客户列表', quote: '报价计算', reminders: '跟进提醒', data: '数据管理', settings: '系统设置' };
   document.getElementById('page-title').textContent = titles[page];
+  const addBtn = document.getElementById('btn-add-customer');
+  if (addBtn) addBtn.style.display = page === 'quote' ? 'none' : '';
   renderPage();
 }
 
@@ -692,6 +704,7 @@ function renderPage() {
   const c = document.getElementById('main-content');
   if (currentPage === 'dashboard') c.innerHTML = renderDashboard();
   else if (currentPage === 'customers') c.innerHTML = renderCustomers();
+  else if (currentPage === 'quote') { c.innerHTML = renderQuote(); calcQuote(); }
   else if (currentPage === 'reminders') c.innerHTML = renderReminders();
   else if (currentPage === 'data') c.innerHTML = renderData();
   else if (currentPage === 'settings') c.innerHTML = renderSettings();
@@ -1939,6 +1952,163 @@ function hideAvatarTooltip() {
 // loadSampleData is intentionally empty — real data is loaded from IndexedDB at startup.
 // No hardcoded sample data to keep the system clean.
 function loadSampleData() {
+}
+
+// ===================== QUOTE CALCULATOR =====================
+function renderQuote() {
+  const numOpts = (n) => Array.from({length: n}, (_, i) => '<option value="' + (i+1) + '">' + (i+1) + '</option>').join('');
+  return `
+  <div class="quote-page-wrap" id="quote-page">
+    <div class="card">
+      <div class="card-header"><h3>⚙️ 喷水织机配置</h3></div>
+      <div class="card-body">
+        <div class="quote-config">
+          <div class="quote-row">
+            <div class="quote-label">型号 Model</div>
+            <select class="form-select" id="q-model" onchange="calcQuote()">
+              <option value="0">YRW-8101 (+$0)</option>
+              <option value="300">YRW-508 (+$300)</option>
+            </select>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">龙头 Head</div>
+            <select class="form-select" id="q-head" onchange="calcQuote()">
+              <option value="0">NPW 410 (+$0)</option>
+              <option value="50">NPW 411 (+$50)</option>
+            </select>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">牛牌综框数量 Heald Frame Qty</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <select class="form-select" id="q-heald" onchange="calcQuote()" style="width:80px">${numOpts(12)}</select>
+              <span style="font-size:12px;color:var(--text-sub)">× $100 / 个</span>
+            </div>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">电控 Electronic Control</div>
+            <select class="form-select" id="q-control" onchange="calcQuote()">
+              <option value="0">XINLIAO (+$0)</option>
+              <option value="100">SANHE (+$100)</option>
+            </select>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">储纬器/喷嘴 Weft Feeder / Nozzle</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <select class="form-select" id="q-feeder" onchange="calcQuote()" style="width:80px">${numOpts(4)}</select>
+              <span style="font-size:12px;color:var(--text-sub)">× $500 / 个</span>
+            </div>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">驱动单元 Drive Unit</div>
+            <select class="form-select" id="q-drive" onchange="calcQuote()">
+              <option value="300">Servo Motor (+$300)</option>
+              <option value="0">Regular Motor (+$0)</option>
+            </select>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">送经/卷取 Let-off / Take-up</div>
+            <select class="form-select" id="q-letoff" onchange="calcQuote()">
+              <option value="0">MLO/MTU (+$0)</option>
+              <option value="450">ELO/ETU (+$450)</option>
+            </select>
+            <div id="q-letoff-note" style="font-size:11px;margin-top:2px"></div>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">卷布棍 Cloth Roll</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <select class="form-select" id="q-roll-qty" onchange="calcQuote()" style="width:80px">${numOpts(4)}</select>
+              <span style="font-size:12px;color:var(--text-sub)">×</span>
+              <select class="form-select" id="q-roll-type" onchange="calcQuote()">
+                <option value="10">Iron (+$10)</option>
+                <option value="20">Aluminum (+$20)</option>
+              </select>
+            </div>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">经轴 Warp Beam</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <select class="form-select" id="q-beam" onchange="calcQuote()" style="width:80px">${numOpts(4)}</select>
+              <span style="font-size:12px;color:var(--text-sub)">× $335 / 个</span>
+            </div>
+          </div>
+          <div class="quote-row">
+            <div class="quote-label">钢扣 Steel Reed</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <select class="form-select" id="q-reed" onchange="calcQuote()" style="width:80px">${numOpts(4)}</select>
+              <span style="font-size:12px;color:var(--text-sub)">× $20 / 个</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="position:sticky;top:0">
+      <div class="card-header"><h3>💰 价格汇总</h3></div>
+      <div class="card-body">
+        <div id="quote-breakdown"></div>
+        <div style="border-top:2px solid var(--border);margin-top:12px;padding-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:16px;font-weight:700">总计 Total</span>
+            <span id="quote-total" style="font-size:28px;font-weight:700;color:var(--primary)">$0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function calcQuote() {
+  var base = 5370;
+  var model = Number(document.getElementById('q-model').value);
+  var head = Number(document.getElementById('q-head').value);
+  var heald = Number(document.getElementById('q-heald').value);
+  var controlVal = document.getElementById('q-control').value;
+  var control = Number(controlVal);
+  var isSanhe = controlVal === '100';
+  var feeder = Number(document.getElementById('q-feeder').value);
+  var drive = Number(document.getElementById('q-drive').value);
+  var letoffVal = document.getElementById('q-letoff').value;
+  var isELO = letoffVal === '450';
+  var letoff = 0, letoffLabel = 'MLO/MTU';
+  if (isELO) {
+    if (isSanhe) { letoff = 550; letoffLabel = 'ELO/ETU (SANHE $550)'; }
+    else { letoff = 450; letoffLabel = 'ELO/ETU ($450)'; }
+  }
+  var note = document.getElementById('q-letoff-note');
+  if (note) {
+    if (isELO && isSanhe) { note.textContent = '⚠️ 电控选 SANHE，ELO/ETU 单价 $550'; note.style.color = 'var(--warning)'; }
+    else if (isELO && !isSanhe) { note.textContent = '💡 电控选 SANHE 时，此选项单价将变为 $550'; note.style.color = 'var(--text-sub)'; }
+    else { note.textContent = ''; }
+  }
+  var rollQty = Number(document.getElementById('q-roll-qty').value);
+  var rollType = Number(document.getElementById('q-roll-type').value);
+  var rollTotal = rollQty * rollType;
+  var beam = Number(document.getElementById('q-beam').value);
+  var beamTotal = beam * 335;
+  var reed = Number(document.getElementById('q-reed').value);
+  var reedTotal = reed * 20;
+  var healdTotal = heald * 100;
+  var feederTotal = feeder * 500;
+  var total = base + model + head + healdTotal + control + feederTotal + drive + letoff + rollTotal + beamTotal + reedTotal;
+  var items = [
+    { label: '基础价格 Base', amount: base },
+    { label: '型号 ' + (model === 0 ? 'YRW-8101' : 'YRW-508'), amount: model },
+    { label: '龙头 ' + (head === 0 ? 'NPW 410' : 'NPW 411'), amount: head },
+    { label: '牛牌综框 × ' + heald + ' ($100)', amount: healdTotal },
+    { label: '电控 ' + (isSanhe ? 'SANHE' : 'XINLIAO'), amount: control },
+    { label: '储纬器/喷嘴 × ' + feeder + ' ($500)', amount: feederTotal },
+    { label: '驱动 ' + (drive === 0 ? 'Regular Motor' : 'Servo Motor'), amount: drive },
+    { label: '送经/卷取 ' + letoffLabel, amount: letoff },
+    { label: '卷布棍 × ' + rollQty + ' (' + (rollType === 10 ? 'Iron' : 'Aluminum') + ')', amount: rollTotal },
+    { label: '经轴 × ' + beam + ' ($335)', amount: beamTotal },
+    { label: '钢扣 × ' + reed + ' ($20)', amount: reedTotal },
+  ];
+  document.getElementById('quote-breakdown').innerHTML = items.map(function(item) {
+    return '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-bottom:1px solid var(--gray-light)">' +
+      '<span style="color:var(--text-sub)">' + item.label + '</span>' +
+      '<span style="font-weight:500;' + (item.amount === 0 ? 'color:var(--text-sub)' : '') + '">$' + item.amount.toLocaleString() + '</span>' +
+    '</div>';
+  }).join('');
+  document.getElementById('quote-total').textContent = '$' + total.toLocaleString();
 }
 
 // ===================== INIT =====================
